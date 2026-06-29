@@ -10,7 +10,8 @@
     "format": "prettier --write \"src/**/*.ts\"",
     "test": "vitest run",
     "db:generate": "drizzle-kit generate",
-    "db:push": "drizzle-kit push"
+    "db:push": "drizzle-kit push",
+    "seed": "bun src/shared/infrastructure/database/seed.ts"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
