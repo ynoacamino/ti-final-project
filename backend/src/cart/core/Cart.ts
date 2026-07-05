@@ -4,6 +4,9 @@ import type { CartItem } from "./CartItem.ts";
  * Represents a Cart domain entity.
  */
 export class Cart {
+  /**
+   *
+   */
   constructor(
     public readonly id: string,
     public readonly customerId: string | null,
@@ -14,6 +17,9 @@ export class Cart {
     public readonly items: CartItem[] = [],
   ) {}
 
+  /**
+   *
+   */
   public static create(params: {
     id: string;
     customerId?: string | null;

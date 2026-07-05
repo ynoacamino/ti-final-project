@@ -11,6 +11,9 @@ import {
 } from "../../shared/infrastructure/database/schema.ts";
 import { eq, like, and, sql, inArray } from "drizzle-orm";
 
+/**
+ *
+ */
 export class SqliteProductRepo implements IProductRepository {
   private toDomain(
     row: typeof products.$inferSelect,
@@ -51,6 +54,9 @@ export class SqliteProductRepo implements IProductRepository {
     );
   }
 
+  /**
+   *
+   */
   async findById(id: string): Promise<Product | null> {
     const [row] = await db.select().from(products).where(eq(products.id, id)).limit(1);
 
@@ -66,6 +72,9 @@ export class SqliteProductRepo implements IProductRepository {
     return this.toDomain(row, variantRows, imageRows);
   }
 
+  /**
+   *
+   */
   async findBySlug(slug: string): Promise<Product | null> {
     const [row] = await db.select().from(products).where(eq(products.slug, slug)).limit(1);
 
@@ -84,6 +93,9 @@ export class SqliteProductRepo implements IProductRepository {
     return this.toDomain(row, variantRows, imageRows);
   }
 
+  /**
+   *
+   */
   async save(product: Product): Promise<void> {
     await db.transaction(async (tx) => {
       // 1. Insert/Update Product
@@ -143,6 +155,9 @@ export class SqliteProductRepo implements IProductRepository {
     });
   }
 
+  /**
+   *
+   */
   async list(params: ListProductsParams): Promise<{ products: Product[]; total: number }> {
     const limit = params.limit ?? 10;
     const offset = params.offset ?? 0;
@@ -221,6 +236,9 @@ export class SqliteProductRepo implements IProductRepository {
     };
   }
 
+  /**
+   *
+   */
   async saveImage(image: ProductImage): Promise<void> {
     await db
       .insert(productImages)
@@ -240,10 +258,16 @@ export class SqliteProductRepo implements IProductRepository {
       });
   }
 
+  /**
+   *
+   */
   async deleteImage(id: string): Promise<void> {
     await db.delete(productImages).where(eq(productImages.id, id));
   }
 
+  /**
+   *
+   */
   async findVariantById(id: string): Promise<ProductVariant | null> {
     const [row] = await db
       .select()
@@ -265,6 +289,9 @@ export class SqliteProductRepo implements IProductRepository {
     );
   }
 
+  /**
+   *
+   */
   async updateVariantStock(variantId: string, newStock: number): Promise<void> {
     await db
       .update(productVariants)

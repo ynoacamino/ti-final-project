@@ -4,12 +4,21 @@ import type { IProductRepository } from "../../catalog/ports/out/IProductReposit
 import { Cart } from "./Cart.ts";
 import { CartItem } from "./CartItem.ts";
 
+/**
+ *
+ */
 export class AddToCartUseCase implements IAddToCartUseCase {
+  /**
+   *
+   */
   constructor(
     private readonly cartRepository: ICartRepository,
     private readonly productRepository: IProductRepository,
   ) {}
 
+  /**
+   *
+   */
   async execute(dto: AddToCartDTO): Promise<Cart> {
     // 1. Fetch variant to check stock and price
     const variant = await this.productRepository.findVariantById(dto.productVariantId);

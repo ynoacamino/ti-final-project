@@ -11,7 +11,7 @@ export interface AuthUser {
 /**
  * Authentication middleware that verifies JWT and optionally checks for authorized roles.
  *
- * @param roles Optional list of allowed roles (e.g., ['admin'])
+ * @param roles - Optional list of allowed roles (e.g., ['admin'])
  */
 export function authMiddleware(roles?: Array<"admin" | "customer">) {
   return async (c: Context, next: Next) => {

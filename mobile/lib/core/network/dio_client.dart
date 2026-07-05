@@ -9,11 +9,9 @@ class DioClient {
   final Dio dio;
   final FlutterSecureStorage _storage;
 
-  DioClient({
-    Dio? dio,
-    FlutterSecureStorage? storage,
-  })  : dio = dio ?? Dio(),
-        _storage = storage ?? const FlutterSecureStorage() {
+  DioClient({Dio? dio, FlutterSecureStorage? storage})
+    : dio = dio ?? Dio(),
+      _storage = storage ?? const FlutterSecureStorage() {
     _initClient();
   }
 
@@ -38,7 +36,9 @@ class DioClient {
         },
         onError: (e, handler) {
           if (kDebugMode) {
-            print('🔴 [Dio Error] ${e.requestOptions.method} ${e.requestOptions.path} : Status ${e.response?.statusCode}');
+            print(
+              '🔴 [Dio Error] ${e.requestOptions.method} ${e.requestOptions.path} : Status ${e.response?.statusCode}',
+            );
             print('Response body: ${e.response?.data}');
           }
           return handler.next(e);

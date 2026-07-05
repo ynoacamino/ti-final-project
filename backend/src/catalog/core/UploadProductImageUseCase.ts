@@ -6,12 +6,21 @@ import type { IProductRepository } from "../ports/out/IProductRepository.ts";
 import type { IStorageService } from "../ports/out/IStorageService.ts";
 import { ProductImage } from "./ProductImage.ts";
 
+/**
+ *
+ */
 export class UploadProductImageUseCase implements IUploadProductImageUseCase {
+  /**
+   *
+   */
   constructor(
     private readonly productRepository: IProductRepository,
     private readonly storageService: IStorageService,
   ) {}
 
+  /**
+   *
+   */
   async execute(dto: UploadProductImageDTO): Promise<ProductImage> {
     // 1. Validate: Product must exist
     const product = await this.productRepository.findById(dto.productId);

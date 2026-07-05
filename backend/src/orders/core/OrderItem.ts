@@ -3,6 +3,9 @@
  * Keeps an immutable snapshot of the product and variant details at the time of purchase.
  */
 export class OrderItem {
+  /**
+   *
+   */
   constructor(
     public readonly id: string,
     public readonly orderId: string,
@@ -15,6 +18,9 @@ export class OrderItem {
     public readonly createdAt: string,
   ) {}
 
+  /**
+   *
+   */
   public static create(params: {
     id: string;
     orderId: string;

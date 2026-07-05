@@ -6,6 +6,9 @@ import { db } from "../../shared/infrastructure/database/client.ts";
 import { orders, orderItems, payments } from "../../shared/infrastructure/database/schema.ts";
 import { eq, and, sql, inArray } from "drizzle-orm";
 
+/**
+ *
+ */
 export class SqliteOrderRepo implements IOrderRepository {
   private toDomain(
     row: typeof orders.$inferSelect,
@@ -64,6 +67,9 @@ export class SqliteOrderRepo implements IOrderRepository {
     );
   }
 
+  /**
+   *
+   */
   async findById(id: string): Promise<Order | null> {
     const [row] = await db.select().from(orders).where(eq(orders.id, id)).limit(1);
     if (!row) return null;
@@ -74,6 +80,9 @@ export class SqliteOrderRepo implements IOrderRepository {
     return this.toDomain(row, itemRows, paymentRows);
   }
 
+  /**
+   *
+   */
   async findByPaymentIntentId(paymentIntentId: string): Promise<Order | null> {
     const [row] = await db
       .select()
@@ -89,6 +98,9 @@ export class SqliteOrderRepo implements IOrderRepository {
     return this.toDomain(row, itemRows, paymentRows);
   }
 
+  /**
+   *
+   */
   async save(order: Order): Promise<void> {
     await db.transaction(async (tx) => {
       // 1. Insert/Update Order
@@ -138,6 +150,9 @@ export class SqliteOrderRepo implements IOrderRepository {
     });
   }
 
+  /**
+   *
+   */
   async savePayment(payment: Payment): Promise<void> {
     await db
       .insert(payments)
@@ -165,6 +180,9 @@ export class SqliteOrderRepo implements IOrderRepository {
       });
   }
 
+  /**
+   *
+   */
   async list(params: ListOrdersParams): Promise<{ orders: Order[]; total: number }> {
     const limit = params.limit ?? 10;
     const offset = params.offset ?? 0;

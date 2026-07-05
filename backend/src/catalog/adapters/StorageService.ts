@@ -3,11 +3,17 @@ import type { IStorageService } from "../ports/out/IStorageService.ts";
 import * as fs from "fs";
 import * as path from "path";
 
+/**
+ *
+ */
 export class StorageService implements IStorageService {
   private s3Client: S3Client | null = null;
   private bucketName: string;
   private isMock = true;
 
+  /**
+   *
+   */
   constructor() {
     this.bucketName = process.env.R2_BUCKET_NAME || "smartpyme-images";
 
@@ -35,6 +41,9 @@ export class StorageService implements IStorageService {
     }
   }
 
+  /**
+   *
+   */
   async upload(fileBuffer: Buffer, fileName: string, contentType: string): Promise<string> {
     if (this.isMock) {
       // Local fallback storage
@@ -73,6 +82,9 @@ export class StorageService implements IStorageService {
     return `${process.env.R2_ENDPOINT}/${this.bucketName}/${fileName}`;
   }
 
+  /**
+   *
+   */
   async delete(fileUrl: string): Promise<void> {
     if (this.isMock) {
       // Parse fileName from local URL

@@ -7,12 +7,21 @@ import type { IProductRepository } from "../../catalog/ports/out/IProductReposit
 import { Cart } from "./Cart.ts";
 import { CartItem } from "./CartItem.ts";
 
+/**
+ *
+ */
 export class UpdateCartItemUseCase implements IUpdateCartItemUseCase {
+  /**
+   *
+   */
   constructor(
     private readonly cartRepository: ICartRepository,
     private readonly productRepository: IProductRepository,
   ) {}
 
+  /**
+   *
+   */
   async execute(dto: UpdateCartItemDTO): Promise<Cart> {
     if (dto.quantity <= 0) {
       throw new Error("Quantity must be greater than 0");

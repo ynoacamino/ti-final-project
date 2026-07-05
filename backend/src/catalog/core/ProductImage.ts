@@ -2,6 +2,9 @@
  * Represents a ProductImage domain entity.
  */
 export class ProductImage {
+  /**
+   *
+   */
   constructor(
     public readonly id: string,
     public readonly productId: string,
@@ -10,6 +13,9 @@ export class ProductImage {
     public readonly createdAt: string,
   ) {}
 
+  /**
+   *
+   */
   public static create(params: {
     id: string;
     productId: string;

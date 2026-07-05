@@ -5,9 +5,18 @@ import type {
 import type { ICartRepository } from "../ports/out/ICartRepository.ts";
 import { Cart } from "./Cart.ts";
 
+/**
+ *
+ */
 export class RemoveFromCartUseCase implements IRemoveFromCartUseCase {
+  /**
+   *
+   */
   constructor(private readonly cartRepository: ICartRepository) {}
 
+  /**
+   *
+   */
   async execute(dto: RemoveFromCartDTO): Promise<Cart> {
     const cart = await this.cartRepository.findCartByItemId(dto.cartItemId);
     if (!cart) {

@@ -5,12 +5,21 @@ import { Product } from "./Product.ts";
 import { ProductVariant } from "./ProductVariant.ts";
 import { generateSlug } from "../../shared/utils/slug.ts";
 
+/**
+ *
+ */
 export class CreateProductUseCase implements ICreateProductUseCase {
+  /**
+   *
+   */
   constructor(
     private readonly productRepository: IProductRepository,
     private readonly categoryRepository: ICategoryRepository,
   ) {}
 
+  /**
+   *
+   */
   async execute(dto: CreateProductDTO): Promise<Product> {
     // 1. Validation: Base price must be greater than 0
     if (dto.basePrice <= 0) {

@@ -5,6 +5,9 @@ import { db } from "../../shared/infrastructure/database/client.ts";
 import { stockMovements, stockAlerts } from "../../shared/infrastructure/database/schema.ts";
 import { eq, and } from "drizzle-orm";
 
+/**
+ *
+ */
 export class SqliteInventoryRepo implements IInventoryRepository {
   private toDomainMovement(row: typeof stockMovements.$inferSelect): StockMovement {
     return new StockMovement(
@@ -34,6 +37,9 @@ export class SqliteInventoryRepo implements IInventoryRepository {
     );
   }
 
+  /**
+   *
+   */
   async saveMovement(movement: StockMovement): Promise<void> {
     await db.insert(stockMovements).values({
       id: movement.id,
@@ -50,6 +56,9 @@ export class SqliteInventoryRepo implements IInventoryRepository {
     });
   }
 
+  /**
+   *
+   */
   async saveAlert(alert: StockAlert): Promise<void> {
     await db
       .insert(stockAlerts)
@@ -72,6 +81,9 @@ export class SqliteInventoryRepo implements IInventoryRepository {
       });
   }
 
+  /**
+   *
+   */
   async findActiveAlertByVariantId(variantId: string): Promise<StockAlert | null> {
     const [row] = await db
       .select()
@@ -83,6 +95,9 @@ export class SqliteInventoryRepo implements IInventoryRepository {
     return this.toDomainAlert(row);
   }
 
+  /**
+   *
+   */
   async listAlerts(status?: "active" | "resolved"): Promise<StockAlert[]> {
     const conditions = [];
     if (status) {

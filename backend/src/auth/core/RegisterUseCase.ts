@@ -8,12 +8,15 @@ import bcrypt from "bcrypt";
  * Implements the input port IRegisterUseCase.
  */
 export class RegisterUseCase implements IRegisterUseCase {
+  /**
+   *
+   */
   constructor(private readonly userRepository: IUserRepository) {}
 
   /**
    * Registers a new user.
    *
-   * @param dto The data transfer object for registration
+   * @param dto - The data transfer object for registration
    * @returns The registered User
    */
   async execute(dto: RegisterDTO): Promise<User> {

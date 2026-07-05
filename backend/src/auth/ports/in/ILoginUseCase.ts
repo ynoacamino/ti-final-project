@@ -20,7 +20,7 @@ export interface ILoginUseCase {
   /**
    * Authenticates a user and generates a JWT.
    *
-   * @param dto The login credentials
+   * @param dto - The login credentials
    * @returns A promise resolving to the login result containing user details and the token
    */
   execute(dto: LoginDTO): Promise<LoginResult>;

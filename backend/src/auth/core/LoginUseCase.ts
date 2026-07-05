@@ -8,12 +8,15 @@ import { SignJWT } from "jose";
  * Implements the input port ILoginUseCase.
  */
 export class LoginUseCase implements ILoginUseCase {
+  /**
+   *
+   */
   constructor(private readonly userRepository: IUserRepository) {}
 
   /**
    * Validates credentials and generates a JWT.
    *
-   * @param dto The login credentials
+   * @param dto - The login credentials
    * @returns Login result containing user data and JWT token
    */
   async execute(dto: LoginDTO): Promise<LoginResult> {

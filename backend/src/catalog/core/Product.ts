@@ -5,6 +5,9 @@ import type { ProductImage } from "./ProductImage.ts";
  * Represents a Product domain entity within the SmartPyME catalog.
  */
 export class Product {
+  /**
+   *
+   */
   constructor(
     public readonly id: string,
     public readonly name: string,
@@ -19,6 +22,9 @@ export class Product {
     public readonly images: ProductImage[] = [],
   ) {}
 
+  /**
+   *
+   */
   public static create(params: {
     id: string;
     name: string;

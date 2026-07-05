@@ -7,12 +7,21 @@ import type { IProductRepository } from "../../catalog/ports/out/IProductReposit
 import { StockMovement } from "./StockMovement.ts";
 import { StockAlert } from "./StockAlert.ts";
 
+/**
+ *
+ */
 export class DecrementStockUseCase implements IDecrementStockUseCase {
+  /**
+   *
+   */
   constructor(
     private readonly productRepository: IProductRepository,
     private readonly inventoryRepository: IInventoryRepository,
   ) {}
 
+  /**
+   *
+   */
   async execute(dto: DecrementStockDTO): Promise<void> {
     if (dto.quantity <= 0) {
       throw new Error("Quantity to decrement must be greater than 0");

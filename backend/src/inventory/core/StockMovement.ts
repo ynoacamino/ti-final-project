@@ -3,6 +3,9 @@
  * Keeps an audit log of all changes to a variant's inventory level.
  */
 export class StockMovement {
+  /**
+   *
+   */
   constructor(
     public readonly id: string,
     public readonly productVariantId: string,
@@ -17,6 +20,9 @@ export class StockMovement {
     public readonly createdBy: string | null,
   ) {}
 
+  /**
+   *
+   */
   public static create(params: {
     id: string;
     productVariantId: string;

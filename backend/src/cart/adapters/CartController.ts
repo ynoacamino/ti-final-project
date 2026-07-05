@@ -44,6 +44,33 @@ const updateCartItemSchema = z.object({
   quantity: z.number().int().positive("La cantidad debe ser mayor a 0"),
 });
 
+async function populateCartItems(items: any[]) {
+  const populated = [];
+  for (const item of items) {
+    const variant = await productRepo.findVariantById(item.productVariantId);
+    if (variant) {
+      const product = await productRepo.findById(variant.productId);
+      populated.push({
+        id: item.id,
+        cartId: item.cartId,
+        productVariantId: item.productVariantId,
+        quantity: item.quantity,
+        unitPriceSnapshot: item.unitPriceSnapshot,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
+        productName: product?.name || "Prenda",
+        size: variant.size,
+        color: variant.color,
+        sku: variant.sku,
+        imageUrl: product?.images?.[0]?.url || "",
+      });
+    } else {
+      populated.push(item);
+    }
+  }
+  return populated;
+}
+
 /**
  * 1. Get Cart
  * GET /api/cart?session_id=xxx
@@ -84,7 +111,7 @@ cartRouter.get("/", async (c) => {
         customerId: cart.customerId,
         sessionId: cart.sessionId,
         status: cart.status,
-        items: cart.items,
+        items: await populateCartItems(cart.items),
         subtotal: cart.getSubtotal(),
       },
     });
@@ -131,7 +158,7 @@ cartRouter.post("/items", async (c) => {
           customerId: cart.customerId,
           sessionId: cart.sessionId,
           status: cart.status,
-          items: cart.items,
+          items: await populateCartItems(cart.items),
           subtotal: cart.getSubtotal(),
         },
       },
@@ -168,7 +195,7 @@ cartRouter.patch("/items/:id", async (c) => {
         customerId: cart.customerId,
         sessionId: cart.sessionId,
         status: cart.status,
-        items: cart.items,
+        items: await populateCartItems(cart.items),
         subtotal: cart.getSubtotal(),
       },
     });
@@ -193,7 +220,7 @@ cartRouter.delete("/items/:id", async (c) => {
         customerId: cart.customerId,
         sessionId: cart.sessionId,
         status: cart.status,
-        items: cart.items,
+        items: await populateCartItems(cart.items),
         subtotal: cart.getSubtotal(),
       },
     });

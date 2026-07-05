@@ -3,6 +3,9 @@
  * Defines specific inventory item configurations based on size and color.
  */
 export class ProductVariant {
+  /**
+   *
+   */
   constructor(
     public readonly id: string,
     public readonly productId: string,
@@ -15,6 +18,9 @@ export class ProductVariant {
     public readonly updatedAt: string,
   ) {}
 
+  /**
+   *
+   */
   public static create(params: {
     id: string;
     productId: string;

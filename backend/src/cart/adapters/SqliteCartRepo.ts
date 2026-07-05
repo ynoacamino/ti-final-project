@@ -5,6 +5,9 @@ import { db } from "../../shared/infrastructure/database/client.ts";
 import { carts, cartItems } from "../../shared/infrastructure/database/schema.ts";
 import { eq, and } from "drizzle-orm";
 
+/**
+ *
+ */
 export class SqliteCartRepo implements ICartRepository {
   private toDomain(
     row: typeof carts.$inferSelect,
@@ -34,6 +37,9 @@ export class SqliteCartRepo implements ICartRepository {
     );
   }
 
+  /**
+   *
+   */
   async findById(id: string): Promise<Cart | null> {
     const [row] = await db.select().from(carts).where(eq(carts.id, id)).limit(1);
     if (!row) return null;
@@ -42,6 +48,9 @@ export class SqliteCartRepo implements ICartRepository {
     return this.toDomain(row, itemRows);
   }
 
+  /**
+   *
+   */
   async findActiveByCustomerId(customerId: string): Promise<Cart | null> {
     const [row] = await db
       .select()
@@ -55,6 +64,9 @@ export class SqliteCartRepo implements ICartRepository {
     return this.toDomain(row, itemRows);
   }
 
+  /**
+   *
+   */
   async findActiveBySessionId(sessionId: string): Promise<Cart | null> {
     const [row] = await db
       .select()
@@ -68,6 +80,9 @@ export class SqliteCartRepo implements ICartRepository {
     return this.toDomain(row, itemRows);
   }
 
+  /**
+   *
+   */
   async save(cart: Cart): Promise<void> {
     await db
       .insert(carts)
@@ -90,6 +105,9 @@ export class SqliteCartRepo implements ICartRepository {
       });
   }
 
+  /**
+   *
+   */
   async saveItem(item: CartItem): Promise<void> {
     await db
       .insert(cartItems)
@@ -112,20 +130,32 @@ export class SqliteCartRepo implements ICartRepository {
       });
   }
 
+  /**
+   *
+   */
   async deleteItem(id: string): Promise<void> {
     await db.delete(cartItems).where(eq(cartItems.id, id));
   }
 
+  /**
+   *
+   */
   async deleteItemsByCartId(cartId: string): Promise<void> {
     await db.delete(cartItems).where(eq(cartItems.cartId, cartId));
   }
 
+  /**
+   *
+   */
   async findCartByItemId(itemId: string): Promise<Cart | null> {
     const [row] = await db.select().from(cartItems).where(eq(cartItems.id, itemId)).limit(1);
     if (!row) return null;
     return this.findById(row.cartId);
   }
 
+  /**
+   *
+   */
   async findActiveCartByVariantId(variantId: string): Promise<Cart | null> {
     const [row] = await db
       .select({ cartId: cartItems.cartId })

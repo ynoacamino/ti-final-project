@@ -2,6 +2,9 @@
  * Represents a Category domain entity within the SmartPyME catalog.
  */
 export class Category {
+  /**
+   *
+   */
   constructor(
     public readonly id: string,
     public readonly name: string,
@@ -12,6 +15,9 @@ export class Category {
     public readonly updatedAt: string,
   ) {}
 
+  /**
+   *
+   */
   public static create(params: {
     id: string;
     name: string;

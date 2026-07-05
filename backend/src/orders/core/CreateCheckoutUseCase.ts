@@ -10,7 +10,13 @@ import type { IProductRepository } from "../../catalog/ports/out/IProductReposit
 import { Order } from "./Order.ts";
 import { OrderItem } from "./OrderItem.ts";
 
+/**
+ *
+ */
 export class CreateCheckoutUseCase implements ICreateCheckoutUseCase {
+  /**
+   *
+   */
   constructor(
     private readonly orderRepository: IOrderRepository,
     private readonly cartRepository: ICartRepository,
@@ -18,6 +24,9 @@ export class CreateCheckoutUseCase implements ICreateCheckoutUseCase {
     private readonly paymentGateway: IPaymentGateway,
   ) {}
 
+  /**
+   *
+   */
   async execute(dto: CreateCheckoutDTO): Promise<CheckoutResult> {
     // 1. Fetch active cart
     const cart = await this.cartRepository.findById(dto.cartId);

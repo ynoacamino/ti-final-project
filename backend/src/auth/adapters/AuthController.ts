@@ -3,6 +3,7 @@ import { z } from "zod";
 import { RegisterUseCase } from "../core/RegisterUseCase.ts";
 import { LoginUseCase } from "../core/LoginUseCase.ts";
 import { SqliteUserRepo } from "./SqliteUserRepo.ts";
+import { authMiddleware } from "../../shared/infrastructure/middleware/auth.ts";
 
 export const authRouter = new Hono();
 
@@ -10,6 +11,23 @@ export const authRouter = new Hono();
 const userRepo = new SqliteUserRepo();
 const registerUseCase = new RegisterUseCase(userRepo);
 const loginUseCase = new LoginUseCase(userRepo);
+
+/**
+ * GET /api/auth/me
+ * Retrieves the current authenticated user's profile info.
+ */
+authRouter.get("/me", authMiddleware(["admin", "customer"]), async (c) => {
+  const user = c.get("user");
+  return c.json({
+    success: true,
+    user: {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    },
+  });
+});
 
 // Zod schemas for input validation
 const registerSchema = z.object({

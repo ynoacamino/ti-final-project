@@ -6,16 +6,16 @@ export class User {
   /**
    * Creates a new instance of the User domain entity.
    *
-   * @param id The unique identifier (UUID v4)
-   * @param email The unique email address
-   * @param passwordHash The bcrypt hased password
-   * @param name The full name of the user
-   * @param phone The contact phone number (optional)
-   * @param role The role in the system ('admin' or 'customer')
-   * @param defaultShippingAddress The default address for shipping (optional)
-   * @param isActive Status of the user account (active or inactive)
-   * @param createdAt Date of creation
-   * @param updatedAt Date of last modification
+   * @param id - The unique identifier (UUID v4)
+   * @param email - The unique email address
+   * @param passwordHash - The bcrypt hased password
+   * @param name - The full name of the user
+   * @param phone - The contact phone number (optional)
+   * @param role - The role in the system ('admin' or 'customer')
+   * @param defaultShippingAddress - The default address for shipping (optional)
+   * @param isActive - Status of the user account (active or inactive)
+   * @param createdAt - Date of creation
+   * @param updatedAt - Date of last modification
    */
   constructor(
     public readonly id: string,

@@ -10,7 +10,13 @@ import { Order } from "./Order.ts";
 import { Payment } from "./Payment.ts";
 import { Cart } from "../../cart/core/Cart.ts";
 
+/**
+ *
+ */
 export class ConfirmPaymentUseCase implements IConfirmPaymentUseCase {
+  /**
+   *
+   */
   constructor(
     private readonly orderRepository: IOrderRepository,
     private readonly cartRepository: ICartRepository,
@@ -18,6 +24,9 @@ export class ConfirmPaymentUseCase implements IConfirmPaymentUseCase {
     private readonly decrementStockUseCase: IDecrementStockUseCase,
   ) {}
 
+  /**
+   *
+   */
   async execute(dto: ConfirmPaymentDTO): Promise<Order> {
     // 1. Fetch order by payment intent ID
     const order = await this.orderRepository.findByPaymentIntentId(dto.stripePaymentIntentId);

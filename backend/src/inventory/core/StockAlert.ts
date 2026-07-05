@@ -2,6 +2,9 @@
  * Represents a StockAlert domain entity.
  */
 export class StockAlert {
+  /**
+   *
+   */
   constructor(
     public readonly id: string,
     public readonly productVariantId: string,
@@ -12,6 +15,9 @@ export class StockAlert {
     public readonly resolvedAt: string | null,
   ) {}
 
+  /**
+   *
+   */
   public static create(params: {
     id: string;
     productVariantId: string;

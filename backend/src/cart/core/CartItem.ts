@@ -2,6 +2,9 @@
  * Represents a CartItem domain entity.
  */
 export class CartItem {
+  /**
+   *
+   */
   constructor(
     public readonly id: string,
     public readonly cartId: string,
@@ -12,6 +15,9 @@ export class CartItem {
     public readonly updatedAt: string,
   ) {}
 
+  /**
+   *
+   */
   public static create(params: {
     id: string;
     cartId: string;

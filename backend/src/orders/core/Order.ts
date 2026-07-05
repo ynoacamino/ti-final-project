@@ -5,6 +5,9 @@ import type { Payment } from "./Payment.ts";
  * Represents an Order domain entity.
  */
 export class Order {
+  /**
+   *
+   */
   constructor(
     public readonly id: string,
     public readonly customerId: string | null,
@@ -25,6 +28,9 @@ export class Order {
     public readonly payments: Payment[] = [],
   ) {}
 
+  /**
+   *
+   */
   public static create(params: {
     id: string;
     customerId?: string | null;

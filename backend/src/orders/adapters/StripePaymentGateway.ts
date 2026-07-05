@@ -5,10 +5,16 @@ import type {
   PaymentStatusResult,
 } from "../ports/out/IPaymentGateway.ts";
 
+/**
+ *
+ */
 export class StripePaymentGateway implements IPaymentGateway {
   private stripe: Stripe;
   private isMock = true;
 
+  /**
+   *
+   */
   constructor() {
     const key = process.env.STRIPE_SECRET_KEY;
     if (key && key !== "sk_test_mock_key") {
@@ -24,6 +30,9 @@ export class StripePaymentGateway implements IPaymentGateway {
     }
   }
 
+  /**
+   *
+   */
   async createPaymentIntent(
     amount: number,
     currency: string,
@@ -50,6 +59,9 @@ export class StripePaymentGateway implements IPaymentGateway {
     };
   }
 
+  /**
+   *
+   */
   async retrievePaymentIntentStatus(paymentIntentId: string): Promise<PaymentStatusResult> {
     if (this.isMock || paymentIntentId.startsWith("pi_mock_")) {
       // Mock Sandbox payment success

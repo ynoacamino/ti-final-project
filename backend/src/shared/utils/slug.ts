@@ -2,7 +2,7 @@
  * Generates a URL-friendly slug from a text string.
  * It removes accents, converts to lowercase, replaces spaces/non-alphanumeric characters with dashes.
  *
- * @param text The input string (e.g. "Polo de Algodón")
+ * @param text - The input string (e.g. "Polo de Algodón")
  * @returns The slugified string (e.g. "polo-de-algodon")
  */
 export function generateSlug(text: string): string {

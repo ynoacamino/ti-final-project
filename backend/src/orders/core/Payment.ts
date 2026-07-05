@@ -2,6 +2,9 @@
  * Represents a Payment domain entity.
  */
 export class Payment {
+  /**
+   *
+   */
   constructor(
     public readonly id: string,
     public readonly orderId: string,
@@ -16,6 +19,9 @@ export class Payment {
     public readonly updatedAt: string,
   ) {}
 
+  /**
+   *
+   */
   public static create(params: {
     id: string;
     orderId: string;
