@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { z } from "zod";
+import Stripe from "stripe";
 import { CreateCheckoutUseCase } from "../core/CreateCheckoutUseCase.ts";
 import { ConfirmPaymentUseCase } from "../core/ConfirmPaymentUseCase.ts";
 import { DecrementStockUseCase } from "../../inventory/core/DecrementStockUseCase.ts";
@@ -305,3 +306,52 @@ ordersRouter.patch("/orders/:id/status", authMiddleware(["admin"]), async (c) =>
     return c.json({ success: false, error: error.message }, 400);
   }
 });
+
+/**
+ * 7. Stripe Webhook handler
+ * POST /api/payments/webhook
+ */
+ordersRouter.post("/payments/webhook", async (c) => {
+  const stripeSecret = process.env.STRIPE_SECRET_KEY;
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  const signature = c.req.header("stripe-signature");
+
+  if (!stripeSecret || stripeSecret === "sk_test_mock_key" || !webhookSecret || !signature) {
+    try {
+      const body = await c.req.json().catch(() => ({}));
+      if (body.type === "payment_intent.succeeded") {
+        const paymentIntentId = body.data?.object?.id;
+        if (paymentIntentId) {
+          await confirmPaymentUseCase.execute({ stripePaymentIntentId: paymentIntentId });
+          return c.json({ received: true, mocked: true });
+        }
+      }
+      return c.json({ received: true, message: "Mock webhook ignored or processed" });
+    } catch (error: any) {
+      return c.json({ error: error.message }, 400);
+    }
+  }
+
+  try {
+    const rawBody = await c.req.text();
+    const stripe = new Stripe(stripeSecret, { apiVersion: "2023-10-16" as any });
+    const event = stripe.webhooks.constructEvent(rawBody, signature, webhookSecret);
+
+    if (event.type === "payment_intent.succeeded") {
+      const paymentIntent = event.data.object as Stripe.PaymentIntent;
+      await confirmPaymentUseCase.execute({ stripePaymentIntentId: paymentIntent.id });
+    } else if (event.type === "payment_intent.payment_failed") {
+      const paymentIntent = event.data.object as Stripe.PaymentIntent;
+      try {
+        await confirmPaymentUseCase.execute({ stripePaymentIntentId: paymentIntent.id });
+      } catch {
+        // expected to fail
+      }
+    }
+
+    return c.json({ received: true });
+  } catch (error: any) {
+    return c.json({ error: `Webhook Error: ${error.message}` }, 400);
+  }
+});
+
