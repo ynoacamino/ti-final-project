@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:mobile/core/router/app_router.dart';
 import 'package:mobile/core/theme/app_theme.dart';
+import 'package:mobile/features/auth/presentation/providers/auth_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,16 +15,20 @@ void main() async {
   runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authProvider);
+    final isAdmin = authState.user?.role == 'admin';
+
     return MaterialApp.router(
       title: 'SmartPyME',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.darkTheme,
+      theme: isAdmin ? AppTheme.darkTheme : AppTheme.lightTheme,
       routerConfig: appRouter,
     );
   }
 }
+
