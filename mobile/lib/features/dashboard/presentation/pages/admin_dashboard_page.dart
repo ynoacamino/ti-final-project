@@ -20,6 +20,7 @@ class _CheckoutQtyController {
 
 class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
   String _selectedInterval = 'daily';
+  String _selectedChartType = 'sales'; // 'sales' or 'orders'
   bool _isRestocking = false;
 
   String _formatCurrency(int cents) {
@@ -119,6 +120,7 @@ class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
       dashboardSalesTimelineProvider(_selectedInterval),
     );
     final alertsAsync = ref.watch(inventoryAlertsProvider);
+    final orderStatusAsync = ref.watch(dashboardOrderStatusProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -208,87 +210,212 @@ class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
 
             const SizedBox(height: 32),
 
-            // 2. Sales Timeline Section
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Línea de Ventas',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                ),
-                DropdownButton<String>(
-                  value: _selectedInterval,
-                  items: const [
-                    DropdownMenuItem(value: 'daily', child: Text('Diario')),
-                    DropdownMenuItem(value: 'weekly', child: Text('Semanal')),
-                    DropdownMenuItem(value: 'monthly', child: Text('Mensual')),
-                  ],
-                  onChanged: (val) {
-                    if (val != null) {
-                      setState(() => _selectedInterval = val);
-                    }
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 24, 24, 16),
-                child: SizedBox(
-                  height: 200,
-                  child: timelineAsync.when(
-                    data: (timeline) {
-                      if (timeline.isEmpty) {
-                        return const Center(
-                          child: Text('Sin datos de ventas en este rango'),
-                        );
-                      }
-                      return LineChart(
-                        LineChartData(
-                          gridData: const FlGridData(show: false),
-                          titlesData: const FlTitlesData(
-                            leftTitles: AxisTitles(
-                              sideTitles: SideTitles(showTitles: false),
-                            ),
-                            rightTitles: AxisTitles(
-                              sideTitles: SideTitles(showTitles: false),
-                            ),
-                            topTitles: AxisTitles(
-                              sideTitles: SideTitles(showTitles: false),
-                            ),
-                            bottomTitles: AxisTitles(
-                              sideTitles: SideTitles(showTitles: false),
-                            ),
-                          ),
-                          borderData: FlBorderData(show: false),
-                          lineBarsData: [
-                            LineChartBarData(
-                              spots: List.generate(timeline.length, (index) {
-                                final point = timeline[index];
-                                final revenue =
-                                    (point['revenue'] as num).toDouble() /
-                                    100.0;
-                                return FlSpot(index.toDouble(), revenue);
-                              }),
-                              isCurved: true,
-                              color: AppTheme.primaryColor,
-                              barWidth: 4,
-                              dotData: const FlDotData(show: true),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                    loading: () =>
-                        const Center(child: CircularProgressIndicator()),
-                    error: (err, _) => Text('Error al cargar gráfico: $err'),
-                  ),
-                ),
-              ),
-            ),
+             // 2. Sales Timeline / Orders Distribution Section
+             Row(
+               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+               children: [
+                 Text(
+                   _selectedChartType == 'sales' ? 'Línea de Ventas' : 'Distribución de Pedidos',
+                   style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                 ),
+                 if (_selectedChartType == 'sales')
+                   DropdownButton<String>(
+                     value: _selectedInterval,
+                     items: const [
+                       DropdownMenuItem(value: 'daily', child: Text('Diario')),
+                       DropdownMenuItem(value: 'weekly', child: Text('Semanal')),
+                       DropdownMenuItem(value: 'monthly', child: Text('Mensual')),
+                     ],
+                     onChanged: (val) {
+                       if (val != null) {
+                         setState(() => _selectedInterval = val);
+                       }
+                     },
+                   ),
+               ],
+             ),
+             const SizedBox(height: 12),
+             
+             // Choice toggles
+             Row(
+               children: [
+                 ChoiceChip(
+                   label: const Text('Ventas'),
+                   selected: _selectedChartType == 'sales',
+                   onSelected: (val) {
+                     if (val) setState(() => _selectedChartType = 'sales');
+                   },
+                 ),
+                 const SizedBox(width: 8),
+                 ChoiceChip(
+                   label: const Text('Pedidos'),
+                   selected: _selectedChartType == 'orders',
+                   onSelected: (val) {
+                     if (val) setState(() => _selectedChartType = 'orders');
+                   },
+                 ),
+               ],
+             ),
+             const SizedBox(height: 16),
+             Card(
+               child: Padding(
+                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                 child: _selectedChartType == 'sales'
+                     ? SizedBox(
+                         height: 200,
+                         child: timelineAsync.when(
+                           data: (timeline) {
+                             if (timeline.isEmpty) {
+                               return const Center(
+                                 child: Text('Sin datos de ventas en este rango'),
+                               );
+                             }
+                             
+                             // Calculate dynamic max for left axis intervals
+                             double maxVal = 100.0;
+                             for (var pt in timeline) {
+                               final val = (pt['revenue'] as num).toDouble() / 100.0;
+                               if (val > maxVal) maxVal = val;
+                             }
+                             
+                             return LineChart(
+                               LineChartData(
+                                 gridData: const FlGridData(
+                                   show: true,
+                                   drawVerticalLine: false,
+                                   horizontalInterval: 100,
+                                 ),
+                                 titlesData: FlTitlesData(
+                                   leftTitles: AxisTitles(
+                                     sideTitles: SideTitles(
+                                       showTitles: true,
+                                       reservedSize: 55,
+                                       getTitlesWidget: (value, meta) {
+                                         return Padding(
+                                           padding: const EdgeInsets.only(right: 6),
+                                           child: Text(
+                                             'S/. ${value.toInt()}',
+                                             style: const TextStyle(color: AppTheme.darkTextSecondary, fontSize: 8),
+                                             textAlign: TextAlign.right,
+                                           ),
+                                         );
+                                       },
+                                     ),
+                                   ),
+                                   bottomTitles: AxisTitles(
+                                     sideTitles: SideTitles(
+                                       showTitles: true,
+                                       reservedSize: 22,
+                                       getTitlesWidget: (value, meta) {
+                                         final idx = value.toInt();
+                                         if (idx >= 0 && idx < timeline.length) {
+                                           final period = timeline[idx]['period'] as String;
+                                           final label = period.length > 5 ? period.substring(period.length - 5) : period;
+                                           return Padding(
+                                             padding: const EdgeInsets.only(top: 4),
+                                             child: Text(
+                                               label,
+                                               style: const TextStyle(color: AppTheme.darkTextSecondary, fontSize: 8),
+                                             ),
+                                           );
+                                         }
+                                         return const SizedBox();
+                                       },
+                                     ),
+                                   ),
+                                   rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                                   topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                                 ),
+                                 borderData: FlBorderData(show: false),
+                                 lineBarsData: [
+                                   LineChartBarData(
+                                     spots: List.generate(timeline.length, (index) {
+                                       final point = timeline[index];
+                                       final revenue = (point['revenue'] as num).toDouble() / 100.0;
+                                       return FlSpot(index.toDouble(), revenue);
+                                     }),
+                                     isCurved: true,
+                                     color: AppTheme.primaryColor,
+                                     barWidth: 3,
+                                     dotData: const FlDotData(show: true),
+                                   ),
+                                 ],
+                               ),
+                             );
+                           },
+                           loading: () => const Center(child: CircularProgressIndicator()),
+                           error: (err, _) => Text('Error al cargar gráfico: $err'),
+                         ),
+                       )
+                     : orderStatusAsync.when(
+                         data: (dist) {
+                           final totalOrders = dist.values.fold<int>(0, (sum, v) => sum + (v as int));
+                           if (totalOrders == 0) {
+                             return const Center(child: Text('Sin pedidos registrados'));
+                           }
+                           
+                           return Column(
+                             crossAxisAlignment: CrossAxisAlignment.stretch,
+                             children: dist.entries.map<Widget>((entry) {
+                               final status = entry.key;
+                               final count = entry.value as int;
+                               final percent = count / totalOrders;
+                               
+                               Color color = const Color(0xFF94A3B8);
+                               if (status == 'pendiente') color = Colors.orange;
+                               if (status == 'pagado') color = const Color(0xFF38BDF8);
+                               if (status == 'enviado') color = const Color(0xFF818CF8);
+                               if (status == 'entregado') color = const Color(0xFF34D399);
+                               if (status == 'cancelado') color = const Color(0xFFF87171);
+                               
+                               return Padding(
+                                 padding: const EdgeInsets.only(bottom: 12.0),
+                                 child: Column(
+                                   crossAxisAlignment: CrossAxisAlignment.stretch,
+                                   children: [
+                                     Row(
+                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                       children: [
+                                         Text(
+                                           status.toUpperCase(),
+                                           style: TextStyle(
+                                             color: color,
+                                             fontWeight: FontWeight.bold,
+                                             fontSize: 10,
+                                             letterSpacing: 1.1,
+                                           ),
+                                         ),
+                                         Text(
+                                           '$count (${(percent * 100).toStringAsFixed(0)}%)',
+                                           style: const TextStyle(
+                                             color: Colors.white,
+                                             fontSize: 11,
+                                             fontWeight: FontWeight.bold,
+                                           ),
+                                         ),
+                                       ],
+                                     ),
+                                     const SizedBox(height: 6),
+                                     ClipRRect(
+                                       borderRadius: BorderRadius.circular(4),
+                                       child: LinearProgressIndicator(
+                                         value: percent,
+                                         backgroundColor: Colors.white10,
+                                         valueColor: AlwaysStoppedAnimation<Color>(color),
+                                         minHeight: 8,
+                                       ),
+                                     ),
+                                   ],
+                                 ),
+                               );
+                             }).toList(),
+                           );
+                         },
+                         loading: () => const Center(child: CircularProgressIndicator()),
+                         error: (err, _) => Text('Error al cargar distribución: $err'),
+                       ),
+               ),
+             ),
 
             const SizedBox(height: 32),
 
@@ -314,9 +441,11 @@ class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
                             color: AppTheme.secondaryColor.withOpacity(0.8),
                           ),
                           const SizedBox(width: 12),
-                          const Text(
-                            'Excelente. Todos los productos tienen stock óptimo.',
-                            style: TextStyle(fontSize: 13),
+                          const Expanded(
+                            child: Text(
+                              'Excelente. Todos los productos tienen stock óptimo.',
+                              style: TextStyle(fontSize: 13),
+                            ),
                           ),
                         ],
                       ),

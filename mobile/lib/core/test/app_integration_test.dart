@@ -112,18 +112,18 @@ void main() {
 
       // 1. Verify we start on Onboarding Screen
       await tester.pumpAndSettle();
-      expect(find.text('SmartPyME'), findsOneWidget);
-      expect(find.text('Compra en Segundos'), findsOneWidget);
+      expect(find.text('Descubre moda que se adapta a ti'), findsOneWidget);
 
-      // 2. Click "Comenzar" or similar to navigate to Login
+      // 2. Click "Siguiente" to navigate to Login
       // Locate the start button
-      final beginButton = find.text('Comenzar');
+      final beginButton = find.text('Siguiente');
       expect(beginButton, findsOneWidget);
+      await tester.ensureVisible(beginButton);
       await tester.tap(beginButton);
       await tester.pumpAndSettle();
 
       // 3. Verify we are on the Login Screen
-      expect(find.text('Iniciar Sesión'), findsOneWidget);
+      expect(find.text('MODA INTELIGENTE PARA TI'), findsOneWidget);
 
       // 4. Enter credentials
       await tester.enterText(find.byType(TextField).at(0), 'alvaro@test.com');
@@ -131,7 +131,7 @@ void main() {
       await tester.pump();
 
       // 5. Tap the Login button
-      final loginBtn = find.widgetWithText(ElevatedButton, 'Ingresar');
+      final loginBtn = find.widgetWithText(ElevatedButton, 'Iniciar sesión');
       expect(loginBtn, findsOneWidget);
       await tester.tap(loginBtn);
 

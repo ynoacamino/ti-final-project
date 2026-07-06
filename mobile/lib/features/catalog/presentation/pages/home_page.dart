@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/core/theme/app_theme.dart';
+import 'package:mobile/features/cart/presentation/providers/cart_provider.dart';
 import 'package:mobile/features/catalog/presentation/providers/catalog_providers.dart';
 
 class HomePage extends ConsumerWidget {
@@ -16,51 +17,133 @@ class HomePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final categoriesAsync = ref.watch(categoriesProvider);
     final productsAsync = ref.watch(productsProvider);
+    final cartState = ref.watch(cartProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final gradientDecoration = isDark
+        ? const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0xFF080D1A),
+                Color(0xFF0F172A),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          )
+        : const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0xFFF3EEFF), // Soft lavender
+                Color(0xFFFFFBFE), // Crema
+                Color(0xFFFFF0F5), // Soft rose
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          );
 
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          // Elegant Header with app title and brand banner
-          SliverAppBar(
-            expandedHeight: 120.0,
-            floating: false,
-            pinned: true,
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-            surfaceTintColor: Colors.transparent, // Disable Material 3 tint overlay
-            flexibleSpace: FlexibleSpaceBar(
-              titlePadding: const EdgeInsets.only(left: 20, bottom: 16),
-              title: Text(
-                'SmartPyME',
-                style: TextStyle(
-                  fontWeight: FontWeight.w900,
-                  color: Theme.of(context).colorScheme.onBackground,
-                ),
-              ),
-              background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: Theme.of(context).brightness == Brightness.dark
-                        ? [
-                            const Color(0xFF080D1A),
-                            const Color(0xFF1E1B4B),
-                          ]
-                        : [
-                            const Color(0xFFFFFBFE),
-                            const Color(0xFFEADDFF),
-                          ],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
+      body: Container(
+        decoration: gradientDecoration,
+        child: CustomScrollView(
+          slivers: [
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Bienvenido',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF79747E),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'SmartPyME',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w900,
+                          color: isDark ? Colors.white : const Color(0xFF1C1B1F),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
+                  GestureDetector(
+                    onTap: () => context.go('/cart'),
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: isDark
+                                  ? const Color(0xFF334155)
+                                  : const Color(0xFF6750A4).withOpacity(0.12),
+                              width: 1.5,
+                            ),
+                            boxShadow: isDark
+                                ? null
+                                : [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.04),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 3),
+                                    ),
+                                  ],
+                          ),
+                          child: Icon(
+                            Icons.shopping_bag_outlined,
+                            color: isDark ? Colors.white : const Color(0xFF1C1B1F),
+                            size: 24,
+                          ),
+                        ),
+                        if (cartState.value != null) ...[
+                          (() {
+                            final count = cartState.value!.items.fold<int>(0, (int prev, element) => prev + element.quantity);
+                            if (count == 0) return const SizedBox();
+                            return Positioned(
+                              right: -2,
+                              top: -2,
+                              child: Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFF6750A4),
+                                  shape: BoxShape.circle,
+                                ),
+                                constraints: const BoxConstraints(
+                                  minWidth: 18,
+                                  minHeight: 18,
+                                ),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  '$count',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 8,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            );
+                          })(),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.shopping_cart_outlined),
-                onPressed: () => context.go('/cart'),
-              ),
-              const SizedBox(width: 8),
-            ],
           ),
 
           // Categories section
@@ -114,12 +197,25 @@ class HomePage extends ConsumerWidget {
                           margin: const EdgeInsets.symmetric(horizontal: 8),
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: AppTheme.surfaceColor,
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? const Color(0xFF1E293B)
+                                : Colors.white,
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: const Color(0xFF334155),
-                              width: 1,
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? const Color(0xFF334155)
+                                  : const Color(0xFFEADDFF).withOpacity(0.4),
+                              width: 1.5,
                             ),
+                            boxShadow: Theme.of(context).brightness == Brightness.dark
+                                ? null
+                                : [
+                                    BoxShadow(
+                                      color: const Color(0xFF6750A4).withOpacity(0.04),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
                           ),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -207,49 +303,140 @@ class HomePage extends ConsumerWidget {
                       onTap: () => context.go('/catalog/product/${prod.slug}'),
                       child: Container(
                         decoration: BoxDecoration(
-                          color: AppTheme.surfaceColor,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? const Color(0xFF1E293B)
+                              : Colors.white,
                           borderRadius: BorderRadius.circular(18),
                           border: Border.all(
-                            color: const Color(0xFF334155),
-                            width: 1,
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? const Color(0xFF334155)
+                                : const Color(0xFF6750A4).withOpacity(0.08),
+                            width: 1.5,
                           ),
+                          boxShadow: Theme.of(context).brightness == Brightness.dark
+                              ? null
+                              : [
+                                  BoxShadow(
+                                    color: const Color(0xFF6750A4).withOpacity(0.03),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            // Product Image
+                            // Product Image Stack
                             Expanded(
-                              child: ClipRRect(
-                                borderRadius: const BorderRadius.vertical(
-                                  top: Radius.circular(17),
-                                ),
-                                child: CachedNetworkImage(
-                                  imageUrl: prod.firstImageUrl,
-                                  fit: BoxThemeFit.cover,
-                                  placeholder: (context, url) => Container(
-                                    color: const Color(0xFF1E293B),
-                                    child: const Center(
-                                      child: SizedBox(
-                                        height: 24,
-                                        width: 24,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          color: AppTheme.primaryColor,
+                              child: Stack(
+                                children: [
+                                  Positioned.fill(
+                                    child: ClipRRect(
+                                      borderRadius: const BorderRadius.vertical(
+                                        top: Radius.circular(17),
+                                      ),
+                                      child: CachedNetworkImage(
+                                        imageUrl: prod.firstImageUrl,
+                                        fit: BoxThemeFit.cover,
+                                        placeholder: (context, url) => Container(
+                                          color: Theme.of(context).brightness == Brightness.dark
+                                              ? const Color(0xFF0F172A)
+                                              : const Color(0xFFF1F5F9),
+                                          child: const Center(
+                                            child: SizedBox(
+                                              height: 24,
+                                              width: 24,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 2,
+                                                color: AppTheme.primaryColor,
+                                              ),
+                                            ),
+                                          ),
                                         ),
+                                        errorWidget: (context, url, error) =>
+                                            Container(
+                                              color: Theme.of(context).brightness == Brightness.dark
+                                                  ? const Color(0xFF0F172A)
+                                                  : const Color(0xFFF1F5F9),
+                                              child: const Icon(
+                                                Icons.image_not_supported_outlined,
+                                                color: AppTheme.textSecondaryColor,
+                                              ),
+                                            ),
                                       ),
                                     ),
                                   ),
-                                  errorWidget: (context, url, error) =>
-                                      Container(
-                                        color: const Color(0xFF1E293B),
-                                        child: const Icon(
-                                          Icons.image_not_supported_outlined,
-                                          color: AppTheme.textSecondaryColor,
+
+                                  // Sold out overlay
+                                  if (prod.totalStock == 0)
+                                    Positioned.fill(
+                                      child: Container(
+                                        color: Colors.black.withOpacity(0.4),
+                                        child: Center(
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                            decoration: BoxDecoration(
+                                              color: Colors.black.withOpacity(0.7),
+                                              borderRadius: BorderRadius.circular(100),
+                                            ),
+                                            child: const Text(
+                                              'AGOTADO',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.w900,
+                                                letterSpacing: 1.2,
+                                              ),
+                                            ),
+                                          ),
                                         ),
                                       ),
-                                ),
+                                    ),
+
+                                  // Oferta badge
+                                  if (prod.basePrice < 15000 && prod.totalStock > 0)
+                                    Positioned(
+                                      top: 8,
+                                      left: 8,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFF6750A4),
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: const Text(
+                                          'OFERTA',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 8,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+
+                                  // Floating wishlist heart
+                                  Positioned(
+                                    top: 8,
+                                    right: 8,
+                                    child: Container(
+                                      padding: const EdgeInsets.all(6),
+                                      decoration: const BoxDecoration(
+                                        color: Colors.white,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Icon(
+                                        Icons.favorite_border,
+                                        color: Color(0xFF79747E),
+                                        size: 16,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
+
+                            // Product Info
                             Padding(
                               padding: const EdgeInsets.all(12.0),
                               child: Column(
@@ -259,46 +446,49 @@ class HomePage extends ConsumerWidget {
                                     prod.name,
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 14,
+                                      fontSize: 13,
+                                      color: Color(0xFF1C1B1F),
                                     ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    _formatCurrency(prod.basePrice),
-                                    style: const TextStyle(
-                                      color: AppTheme.secondaryColor,
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 14,
+                                  const SizedBox(height: 6),
+                                  
+                                  // Stock availability chip
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                    decoration: BoxDecoration(
+                                      color: prod.totalStock > 5
+                                          ? const Color(0xFFD9F5E4)
+                                          : (prod.totalStock > 0 ? const Color(0xFFFEF3C7) : const Color(0xFFFCE8E6)),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Text(
+                                      prod.totalStock > 5
+                                          ? '• Disponible'
+                                          : (prod.totalStock > 0 ? '• Últimas ud.' : '• Agotado'),
+                                      style: TextStyle(
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.bold,
+                                        color: prod.totalStock > 5
+                                            ? const Color(0xFF146C3E)
+                                            : (prod.totalStock > 0 ? const Color(0xFFD97706) : const Color(0xFFC1634A)),
+                                      ),
                                     ),
                                   ),
-                                  const SizedBox(height: 6),
-                                  // Stock indicator
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        prod.totalStock > 0
-                                            ? Icons.check_circle_outline
-                                            : Icons.remove_circle_outline,
-                                        size: 14,
-                                        color: prod.totalStock > 0
-                                            ? AppTheme.secondaryColor
-                                            : AppTheme.errorColor,
+                                  const SizedBox(height: 8),
+
+                                  // Price
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: Text(
+                                      _formatCurrency(prod.basePrice),
+                                      style: const TextStyle(
+                                        color: Color(0xFF1C1B1F),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
                                       ),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        prod.totalStock > 0
-                                            ? 'En Stock (${prod.totalStock})'
-                                            : 'Agotado',
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          color: prod.totalStock > 0
-                                              ? AppTheme.secondaryColor
-                                              : AppTheme.errorColor,
-                                        ),
-                                      ),
-                                    ],
+                                    ),
                                   ),
                                 ],
                               ),
@@ -333,8 +523,9 @@ class HomePage extends ConsumerWidget {
           const SliverToBoxAdapter(child: SizedBox(height: 32)),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 }
 
 /// Helper extension to map cover fits

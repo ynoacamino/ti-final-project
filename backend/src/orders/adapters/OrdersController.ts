@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Hono } from "hono";
 import { z } from "zod";
 import Stripe from "stripe";

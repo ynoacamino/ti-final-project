@@ -45,7 +45,7 @@ class _AdminOrdersPageState extends ConsumerState<AdminOrdersPage> {
 
   String _formatDate(String isoString) {
     try {
-      final date = DateTime.parse(isoString);
+      final date = DateTime.parse(isoString).toLocal();
       return DateFormat('dd MMM yyyy, hh:mm a').format(date);
     } catch (_) {
       return isoString;
