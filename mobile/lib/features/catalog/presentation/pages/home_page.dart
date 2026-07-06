@@ -25,6 +25,8 @@ class HomePage extends ConsumerWidget {
             expandedHeight: 120.0,
             floating: false,
             pinned: true,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            surfaceTintColor: Colors.transparent, // Disable Material 3 tint overlay
             flexibleSpace: FlexibleSpaceBar(
               titlePadding: const EdgeInsets.only(left: 20, bottom: 16),
               title: Text(
@@ -35,12 +37,17 @@ class HomePage extends ConsumerWidget {
                 ),
               ),
               background: Container(
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [
-                      AppTheme.backgroundColor,
-                      Color(0xFF1E1B4B), // Indigo Dark
-                    ],
+                    colors: Theme.of(context).brightness == Brightness.dark
+                        ? [
+                            const Color(0xFF080D1A),
+                            const Color(0xFF1E1B4B),
+                          ]
+                        : [
+                            const Color(0xFFFFFBFE),
+                            const Color(0xFFEADDFF),
+                          ],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ),

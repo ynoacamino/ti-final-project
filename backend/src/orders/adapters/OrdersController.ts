@@ -11,6 +11,8 @@ import { SqliteInventoryRepo } from "../../inventory/adapters/SqliteInventoryRep
 import { StripePaymentGateway } from "./StripePaymentGateway.ts";
 import { authMiddleware } from "../../shared/infrastructure/middleware/auth.ts";
 import { Order } from "../core/Order.ts";
+import { Payment } from "../core/Payment.ts";
+import { Cart } from "../../cart/core/Cart.ts";
 
 export const ordersRouter = new Hono();
 
@@ -271,6 +273,48 @@ ordersRouter.patch("/orders/:id/status", authMiddleware(["admin"]), async (c) =>
     });
 
     await orderRepo.save(updatedOrder);
+
+    // If order transitions to pagado from pendiente (e.g. manual payment validation by admin)
+    if (newStatus === "pagado" && currentStatus === "pendiente") {
+      // 1. Decrement stock for variants (since it was pending and hasn't been decremented yet)
+      for (const item of order.items) {
+        await decrementStockUseCase.execute({
+          productVariantId: item.productVariantId,
+          quantity: item.quantity,
+          referenceType: "order",
+          referenceId: order.id,
+        });
+      }
+
+      // 2. Save a Payment record to database so sales statistics count it!
+      const payment = Payment.create({
+        id: crypto.randomUUID(),
+        orderId: order.id,
+        amount: order.total,
+        currency: order.currency,
+        status: "succeeded",
+        method: "manual",
+      });
+      await orderRepo.savePayment(payment);
+
+      // 3. Mark active cart as converted and empty it
+      let cart: Cart | null = null;
+      if (order.customerId) {
+        cart = await cartRepo.findActiveByCustomerId(order.customerId);
+      } else if (order.items.length > 0 && order.items[0]) {
+        cart = await cartRepo.findActiveCartByVariantId(order.items[0].productVariantId);
+      }
+
+      if (cart) {
+        const convertedCart = Cart.create({
+          ...cart,
+          status: "converted",
+          updatedAt: new Date().toISOString(),
+        });
+        await cartRepo.save(convertedCart);
+        await cartRepo.deleteItemsByCartId(cart.id);
+      }
+    }
 
     // If order is cancelled, we should ideally restore the stock!
     if (newStatus === "cancelado" && currentStatus === "pagado") {

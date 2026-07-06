@@ -645,27 +645,19 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
                                           color: Colors.white,
                                         ),
                                       )
-                                    : Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          const Icon(Icons.shopping_bag_outlined, size: 18),
-                                          const SizedBox(width: 8),
-                                          Text(stock > 0 ? 'Añadir al Carrito' : 'Sin Stock'),
-                                          if (_quantity > 1) ...[
+                                    : FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            const Icon(Icons.shopping_bag_outlined, size: 18),
                                             const SizedBox(width: 8),
-                                            Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                              decoration: BoxDecoration(
-                                                color: Colors.white24,
-                                                borderRadius: BorderRadius.circular(10),
-                                              ),
-                                              child: Text(
-                                                '$_quantity',
-                                                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
-                                              ),
-                                            )
-                                          ]
-                                        ],
+                                            Text(
+                                              stock > 0 ? 'Añadir al Carrito' : 'Sin Stock',
+                                              style: const TextStyle(fontWeight: FontWeight.bold),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                               ),
                             ),

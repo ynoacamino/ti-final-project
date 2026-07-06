@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -15,6 +16,28 @@ class AdminOrdersPage extends ConsumerStatefulWidget {
 class _AdminOrdersPageState extends ConsumerState<AdminOrdersPage> {
   String? _selectedStatusFilter;
   bool _isUpdating = false;
+
+  String _formatAddress(String? addressJson) {
+    if (addressJson == null || addressJson.isEmpty) return 'Dirección no disponible';
+    try {
+      final parsed = jsonDecode(addressJson);
+      if (parsed is Map) {
+        final street = parsed['street'] ?? parsed['address'] ?? '';
+        final city = parsed['city'] ?? '';
+        final state = parsed['state'] ?? parsed['department'] ?? '';
+        final ref = parsed['references'] ?? parsed['reference'] ?? '';
+
+        final parts = <String>[];
+        if (street.toString().isNotEmpty) parts.add(street.toString());
+        if (city.toString().isNotEmpty) parts.add(city.toString());
+        if (state.toString().isNotEmpty) parts.add(state.toString());
+        if (ref.toString().isNotEmpty) parts.add('Ref: ${ref.toString()}');
+
+        return parts.isEmpty ? addressJson : parts.join(', ');
+      }
+    } catch (_) {}
+    return addressJson;
+  }
 
   String _formatCurrency(int cents) {
     return 'S/. ${(cents / 100).toStringAsFixed(2)}';
@@ -318,7 +341,7 @@ class _AdminOrdersPageState extends ConsumerState<AdminOrdersPage> {
                                                 const SizedBox(width: 6),
                                                 Expanded(
                                                   child: Text(
-                                                    order.shippingAddress ?? 'Dirección no disponible',
+                                                    _formatAddress(order.shippingAddress),
                                                     style: const TextStyle(fontSize: 12, color: AppTheme.darkTextSecondary),
                                                   ),
                                                 ),

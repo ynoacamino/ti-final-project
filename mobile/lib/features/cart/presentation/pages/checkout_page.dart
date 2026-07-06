@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/core/theme/app_theme.dart';
 import 'package:mobile/features/auth/presentation/providers/auth_provider.dart';
@@ -32,6 +31,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
   final _notesController = TextEditingController();
 
   bool _isProcessing = false;
+  String _paymentMethod = 'card';
 
   @override
   void dispose() {
@@ -50,6 +50,225 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
 
   String _formatCurrency(int cents) {
     return 'S/. ${(cents / 100).toStringAsFixed(2)}';
+  }
+
+  Future<void> _showSimulatedCardDialog(String paymentIntentId, String orderId) async {
+    final cardNumberController = TextEditingController();
+    final expiryController = TextEditingController();
+    final cvvController = TextEditingController();
+
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          title: const Row(
+            children: [
+              Icon(Icons.credit_card, color: AppTheme.primaryColor),
+              SizedBox(width: 8),
+              Text('Pago con Tarjeta'),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text(
+                'Ingresa los datos de tu tarjeta para simular la pasarela segura.',
+                style: TextStyle(fontSize: 13, color: AppTheme.textSecondaryColor),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: cardNumberController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Número de Tarjeta',
+                  hintText: '4242 4242 4242 4242',
+                  prefixIcon: Icon(Icons.credit_card),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: expiryController,
+                      keyboardType: TextInputType.datetime,
+                      decoration: const InputDecoration(
+                        labelText: 'Exp. (MM/AA)',
+                        hintText: '12/28',
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TextField(
+                      controller: cvvController,
+                      keyboardType: TextInputType.number,
+                      obscureText: true,
+                      decoration: const InputDecoration(
+                        labelText: 'CVV',
+                        hintText: '123',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                setState(() => _isProcessing = false);
+              },
+              child: const Text('Cancelar'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final cardNo = cardNumberController.text.replaceAll(' ', '');
+                if (cardNo.length < 16) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Número de tarjeta inválido (debe tener 16 dígitos)'),
+                      backgroundColor: AppTheme.errorColor,
+                    ),
+                  );
+                  return;
+                }
+                Navigator.of(context).pop(); // Cerrar diálogo de tarjeta
+
+                setState(() => _isProcessing = true);
+                try {
+                  // Confirmar pago en el servidor directamente
+                  final (confirmResult, confirmFailure) = await ref
+                      .read(cartRepositoryProvider)
+                      .confirmPayment(paymentIntentId);
+
+                  if (confirmFailure != null || confirmResult == null) {
+                    throw Exception(confirmFailure?.message ?? 'La confirmación del pago falló.');
+                  }
+
+                  // Vaciar carrito
+                  await ref.read(cartProvider.notifier).clearCart();
+                  if (mounted) {
+                    context.go('/cart/order-confirmation/$orderId');
+                  }
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error al procesar pago: $e'),
+                      backgroundColor: AppTheme.errorColor,
+                    ),
+                  );
+                } finally {
+                  if (mounted) {
+                    setState(() => _isProcessing = false);
+                  }
+                }
+              },
+              child: const Text('Confirmar Pago'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _showManualPaymentDialog(String orderId) async {
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          title: const Row(
+            children: [
+              Icon(Icons.qr_code_scanner, color: AppTheme.primaryColor),
+              SizedBox(width: 8),
+              Text('Pago Manual / Yape'),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text(
+                'Por favor, realiza la transferencia o Yape al siguiente número:',
+                style: TextStyle(fontSize: 13, color: AppTheme.textSecondaryColor),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppTheme.primaryColor.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppTheme.primaryColor.withOpacity(0.2)),
+                ),
+                child: const Column(
+                  children: [
+                    Text(
+                      'YAPE / PLIN',
+                      style: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryColor, fontSize: 12),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      '987 654 321',
+                      style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24, letterSpacing: 1),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      'Titular: SmartPyME S.A.C.',
+                      style: TextStyle(fontSize: 12, color: AppTheme.textSecondaryColor),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Una vez enviado tu pago, el administrador confirmará tu pedido en el sistema.',
+                style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                setState(() => _isProcessing = false);
+              },
+              child: const Text('Cancelar'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.of(context).pop(); // Cerrar diálogo
+                setState(() => _isProcessing = true);
+
+                try {
+                  // Vaciar carrito
+                  await ref.read(cartProvider.notifier).clearCart();
+                  if (mounted) {
+                    context.go('/cart/order-confirmation/$orderId');
+                  }
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error: $e'),
+                      backgroundColor: AppTheme.errorColor,
+                    ),
+                  );
+                } finally {
+                  if (mounted) {
+                    setState(() => _isProcessing = false);
+                  }
+                }
+              },
+              child: const Text('Confirmar Pedido'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> _processPayment() async {
@@ -74,7 +293,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
         'references': _referencesController.text.trim(),
       };
 
-      // 1. Create checkout and get payment credentials
+      // 1. Create checkout on backend
       final (checkoutData, failure) = await ref
           .read(cartRepositoryProvider)
           .checkout(
@@ -90,59 +309,15 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
         throw Exception(failure?.message ?? 'Error al iniciar checkout');
       }
 
-      final clientSecret = checkoutData['clientSecret'] as String;
       final orderMap = checkoutData['order'] as Map<String, dynamic>;
       final orderId = orderMap['id'] as String;
       final paymentIntentId = orderMap['stripePaymentIntentId'] as String;
 
-      // 2. Initialize the Stripe Payment Sheet
-      await Stripe.instance.initPaymentSheet(
-        paymentSheetParameters: SetupPaymentSheetParameters(
-          paymentIntentClientSecret: clientSecret,
-          merchantDisplayName: 'SmartPyME SAC',
-          style: ThemeMode.dark,
-          appearance: const PaymentSheetAppearance(
-            colors: PaymentSheetAppearanceColors(
-              primary: AppTheme.primaryColor,
-              background: AppTheme.backgroundColor,
-              componentBackground: AppTheme.surfaceColor,
-              placeholderText: AppTheme.textSecondaryColor,
-            ),
-          ),
-        ),
-      );
-
-      // 3. Display the Stripe checkout form sheet
-      await Stripe.instance.presentPaymentSheet();
-
-      // 4. Confirm payment outcome on backend
-      final (confirmResult, confirmFailure) = await ref
-          .read(cartRepositoryProvider)
-          .confirmPayment(paymentIntentId);
-
-      if (confirmFailure != null || confirmResult == null) {
-        throw Exception(
-          confirmFailure?.message ??
-              'El pago fue aprobado por Stripe, pero falló la confirmación en el servidor',
-        );
-      }
-
-      // 5. Success: Empty cart and route to confirmation page
-      await ref.read(cartProvider.notifier).clearCart();
-
-      if (mounted) {
-        context.go('/cart/order-confirmation/$orderId');
-      }
-    } on StripeException catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Pago cancelado: ${e.error.localizedMessage ?? 'El usuario canceló la transacción'}',
-            ),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
+      // 2. Select route based on chosen payment method
+      if (_paymentMethod == 'card') {
+        await _showSimulatedCardDialog(paymentIntentId, orderId);
+      } else {
+        await _showManualPaymentDialog(orderId);
       }
     } catch (e) {
       if (mounted) {
@@ -153,10 +328,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
           ),
         );
       }
-    } finally {
-      if (mounted) {
-        setState(() => _isProcessing = false);
-      }
+      setState(() => _isProcessing = false);
     }
   }
 
@@ -352,6 +524,45 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                               prefixIcon: Icon(Icons.notes),
                             ),
                             maxLines: 2,
+                          ),
+                          const SizedBox(height: 32),
+                          Text(
+                            'Método de Pago',
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 16),
+                          Card(
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              side: BorderSide(color: Colors.grey[300]!, width: 1),
+                            ),
+                            child: Column(
+                              children: [
+                                RadioListTile<String>(
+                                  title: const Text('Tarjeta (Simulado)', style: TextStyle(fontWeight: FontWeight.bold)),
+                                  subtitle: const Text('Simula el pago seguro con tarjeta sin usar Stripe real.'),
+                                  value: 'card',
+                                  groupValue: _paymentMethod,
+                                  onChanged: (val) {
+                                    if (val != null) setState(() => _paymentMethod = val);
+                                  },
+                                  activeColor: AppTheme.primaryColor,
+                                ),
+                                const Divider(height: 1, indent: 16, endIndent: 16),
+                                RadioListTile<String>(
+                                  title: const Text('Pago Manual (Yape / Transferencia)', style: TextStyle(fontWeight: FontWeight.bold)),
+                                  subtitle: const Text('Transfiere directamente y confirma tu pedido.'),
+                                  value: 'manual',
+                                  groupValue: _paymentMethod,
+                                  onChanged: (val) {
+                                    if (val != null) setState(() => _paymentMethod = val);
+                                  },
+                                  activeColor: AppTheme.primaryColor,
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),

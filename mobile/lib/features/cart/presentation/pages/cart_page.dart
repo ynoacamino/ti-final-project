@@ -287,17 +287,25 @@ class CartPage extends ConsumerWidget {
     required IconData icon,
     required VoidCallback? onPressed,
   }) {
+    final isDisabled = onPressed == null;
     return Container(
       height: 32,
       width: 32,
       decoration: BoxDecoration(
-        color: const Color(0xFF1E293B),
+        color: isDisabled ? Colors.grey[200] : AppTheme.primaryColor.withOpacity(0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFF334155), width: 1),
+        border: Border.all(
+          color: isDisabled ? Colors.grey[300]! : AppTheme.primaryColor.withOpacity(0.3),
+          width: 1,
+        ),
       ),
       child: IconButton(
         padding: EdgeInsets.zero,
-        icon: Icon(icon, size: 16),
+        icon: Icon(
+          icon,
+          size: 16,
+          color: isDisabled ? Colors.grey[400] : AppTheme.primaryColor,
+        ),
         onPressed: onPressed,
       ),
     );
