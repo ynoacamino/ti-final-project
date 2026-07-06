@@ -58,56 +58,123 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final authState = ref.watch(authProvider);
 
     return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: SafeArea(
+      backgroundColor: const Color(0xFFFAF8FC),
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
             child: Form(
               key: _formKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // App Title with Gradient Accent
-                  Center(
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: AppTheme.primaryColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(16),
+                  // App Title Logo and Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF6750A4),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(
+                          Icons.shopping_bag,
+                          size: 22,
+                          color: Colors.white,
+                        ),
                       ),
-                      child: const Icon(
-                        Icons.lock_person_outlined,
-                        size: 48,
-                        color: AppTheme.primaryColor,
+                      const SizedBox(width: 8),
+                      const Text(
+                        'SmartPyME',
+                        style: TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.w900,
+                          color: Color(0xFF6750A4),
+                          letterSpacing: -0.5,
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'Iniciar Sesión',
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  const SizedBox(height: 6),
+                  const Text(
+                    'MODA INTELIGENTE PARA TI',
+                    style: TextStyle(
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
+                      color: Color(0xFF79747E),
+                      letterSpacing: 1.5,
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Ingresa a tu cuenta para continuar comprando',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 36),
 
-                  // Email Input
+                  // Tab Selector: Iniciar sesión / Registrarse
+                  Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF4EFF4),
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF6750A4),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            alignment: Alignment.center,
+                            child: const Text(
+                              'Iniciar sesión',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () => context.push('/register'),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              color: Colors.transparent,
+                              alignment: Alignment.center,
+                              child: const Text(
+                                'Registrarse',
+                                style: TextStyle(
+                                  color: Color(0xFF49454F),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 36),
+
+                  // Email Input field
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
-                    decoration: const InputDecoration(
-                      labelText: 'Correo Electrónico',
-                      hintText: 'ejemplo@correo.com',
-                      prefixIcon: Icon(Icons.email_outlined),
+                    decoration: InputDecoration(
+                      hintText: 'Correo electrónico',
+                      prefixIcon: const Icon(Icons.email_outlined, color: Color(0xFF49454F)),
+                      filled: true,
+                      fillColor: const Color(0xFFF4EFF4),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 16),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -123,25 +190,33 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   ),
                   const SizedBox(height: 20),
 
-                  // Password Input
+                  // Password Input field
                   TextFormField(
                     controller: _passwordController,
                     obscureText: _obscurePassword,
                     textInputAction: TextInputAction.done,
                     onFieldSubmitted: (_) => _submit(),
                     decoration: InputDecoration(
-                      labelText: 'Contraseña',
-                      prefixIcon: const Icon(Icons.lock_outlined),
+                      hintText: 'Contraseña',
+                      prefixIcon: const Icon(Icons.lock_outline, color: Color(0xFF49454F)),
                       suffixIcon: IconButton(
                         icon: Icon(
                           _obscurePassword
                               ? Icons.visibility_off_outlined
                               : Icons.visibility_outlined,
+                          color: const Color(0xFF49454F),
                         ),
                         onPressed: () => setState(() {
                           _obscurePassword = !_obscurePassword;
                         }),
                       ),
+                      filled: true,
+                      fillColor: const Color(0xFFF4EFF4),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 16),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -153,7 +228,24 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 12),
+
+                  // Forgot Password Link
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () {},
+                      child: const Text(
+                        '¿Olvidaste tu contraseña?',
+                        style: TextStyle(
+                          color: Color(0xFF6750A4),
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
 
                   // Submit Button
                   ElevatedButton(
@@ -162,7 +254,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         : _submit,
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      backgroundColor: AppTheme.primaryColor,
+                      backgroundColor: const Color(0xFF6750A4),
+                      foregroundColor: Colors.white,
+                      elevation: 4,
+                      shadowColor: const Color(0xFF6750A4).withOpacity(0.4),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(28),
+                      ),
                     ),
                     child: authState.status == AuthStatus.authenticating
                         ? const SizedBox(
@@ -173,29 +271,33 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                               color: Colors.white,
                             ),
                           )
-                        : const Text('Ingresar'),
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Register Redirection Link
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        '¿No tienes una cuenta? ',
-                        style: TextStyle(color: AppTheme.textSecondaryColor),
-                      ),
-                      GestureDetector(
-                        onTap: () => context.push('/register'),
-                        child: const Text(
-                          'Regístrate aquí',
-                          style: TextStyle(
-                            color: AppTheme.primaryColor,
-                            fontWeight: FontWeight.bold,
+                        : const Text(
+                            'Iniciar sesión',
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                           ),
-                        ),
+                  ),
+                  const SizedBox(height: 32),
+
+                  // Guest Access Link Centered
+                  Center(
+                    child: TextButton(
+                      onPressed: () => context.go('/home'),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Continuar como invitado',
+                            style: TextStyle(
+                              color: Color(0xFF6750A4),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                          SizedBox(width: 4),
+                          Icon(Icons.chevron_right, size: 18, color: Color(0xFF6750A4)),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ],
               ),

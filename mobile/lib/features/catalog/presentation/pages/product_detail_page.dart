@@ -83,6 +83,22 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
               .toSet()
               .toList();
 
+          final uniqueSizes = prod.variants.map((v) => v.size).toSet().toList();
+          final sizeOrder = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+          uniqueSizes.sort((a, b) {
+            final idxA = sizeOrder.indexOf(a);
+            final idxB = sizeOrder.indexOf(b);
+            if (idxA != -1 && idxB != -1) {
+              return idxA.compareTo(idxB);
+            }
+            final numA = int.tryParse(a.replaceAll(RegExp(r'\D'), ''));
+            final numB = int.tryParse(b.replaceAll(RegExp(r'\D'), ''));
+            if (numA != null && numB != null) {
+              return numA.compareTo(numB);
+            }
+            return a.compareTo(b);
+          });
+
           // Reset or select default size if needed
           if (_selectedSize == null || !sizesForColor.contains(_selectedSize)) {
             _selectedSize = sizesForColor.isNotEmpty ? sizesForColor.first : null;
@@ -271,7 +287,7 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
                             Wrap(
                               spacing: 8,
                               runSpacing: 8,
-                              children: ['XS', 'S', 'M', 'L', 'XL'].map((size) {
+                              children: uniqueSizes.map((size) {
                                 final isAvailable = sizesForColor.contains(size);
                                 final isSelected = size == _selectedSize;
 
@@ -553,20 +569,18 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
                               child: Row(
                                 children: [
                                   GestureDetector(
-                                    onTap: () {
-                                      if (_quantity > 1) {
-                                        setState(() => _quantity--);
-                                      }
-                                    },
+                                    onTap: _selectedSize == null || stock <= 0 || _quantity <= 1
+                                        ? null
+                                        : () => setState(() => _quantity--),
                                     child: CircleAvatar(
                                       radius: 18,
-                                      backgroundColor: _quantity > 1
+                                      backgroundColor: _quantity > 1 && stock > 0 && _selectedSize != null
                                           ? AppTheme.lightPrimary
                                           : Colors.transparent,
                                       child: Icon(
                                         Icons.remove,
                                         size: 15,
-                                        color: _quantity > 1
+                                        color: _quantity > 1 && stock > 0 && _selectedSize != null
                                             ? Colors.white
                                             : const Color(0xFFCAC4D0),
                                       ),
@@ -585,14 +599,20 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
                                     ),
                                   ),
                                   GestureDetector(
-                                    onTap: () => setState(() => _quantity++),
-                                    child: const CircleAvatar(
+                                    onTap: _selectedSize == null || stock <= 0 || _quantity >= stock
+                                        ? null
+                                        : () => setState(() => _quantity++),
+                                    child: CircleAvatar(
                                       radius: 18,
-                                      backgroundColor: AppTheme.lightPrimary,
+                                      backgroundColor: _selectedSize == null || stock <= 0 || _quantity >= stock
+                                          ? const Color(0xFFF4EFF4)
+                                          : AppTheme.lightPrimary,
                                       child: Icon(
                                         Icons.add,
                                         size: 15,
-                                        color: Colors.white,
+                                        color: _selectedSize == null || stock <= 0 || _quantity >= stock
+                                            ? const Color(0xFFCAC4D0)
+                                            : Colors.white,
                                       ),
                                     ),
                                   ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mobile/core/theme/app_theme.dart';
 
 class OnboardingPage extends StatelessWidget {
   const OnboardingPage({super.key});
@@ -8,137 +7,239 @@ class OnboardingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [AppTheme.backgroundColor, Color(0xFF020617)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: SafeArea(
+      backgroundColor: const Color(0xFFFAF8FC),
+      body: SafeArea(
+        child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Spacer(flex: 1),
-
-                // Premium App Logo Header
-                Center(
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: AppTheme.primaryColor.withOpacity(0.1),
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: AppTheme.primaryColor.withOpacity(0.3),
-                        width: 2,
+                // Top Bar with Skip ("Omitir")
+                Align(
+                  alignment: Alignment.topRight,
+                  child: TextButton(
+                    onPressed: () => context.go('/login'),
+                    child: const Text(
+                      'Omitir',
+                      style: TextStyle(
+                        color: Color(0xFF6750A4),
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
                       ),
-                    ),
-                    child: const Icon(
-                      Icons.shopping_bag_outlined,
-                      size: 64,
-                      color: AppTheme.primaryColor,
                     ),
                   ),
                 ),
+
                 const SizedBox(height: 24),
 
-                // Welcome texts
-                Text(
-                  'SmartPyME',
-                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: -1,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'Tu tienda inteligente en un solo lugar. Compra con facilidad, gestiona tus pedidos y mantén el control de tu stock en tiempo real.',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyMedium?.copyWith(fontSize: 16, height: 1.5),
-                  textAlign: TextAlign.center,
-                ),
-
-                const Spacer(flex: 1),
-
-                // Feature items
-                _buildFeatureRow(
-                  context,
-                  icon: Icons.flash_on_outlined,
-                  title: 'Compra en Segundos',
-                  description:
-                      'Explora el catálogo, añade variantes al carrito y paga con Stripe Sandbox.',
-                ),
-                const SizedBox(height: 20),
-                _buildFeatureRow(
-                  context,
-                  icon: Icons.lock_outline,
-                  title: 'Acceso Seguro y Roles',
-                  description:
-                      'Tu cuenta está protegida con encriptación bcrypt y tokens JWT.',
-                ),
-                const SizedBox(height: 20),
-                _buildFeatureRow(
-                  context,
-                  icon: Icons.trending_up_outlined,
-                  title: 'Panel Administrativo',
-                  description:
-                      'Controla ingresos, timeline de ventas y alertas de stock bajo al instante.',
-                ),
-
-                const Spacer(flex: 2),
-
-                // CTA Button
-                ElevatedButton(
-                  onPressed: () => context.go('/login'),
-                  style:
-                      ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        backgroundColor: Colors.transparent,
-                        shadowColor: Colors.transparent,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                      ).copyWith(
-                        backgroundColor: MaterialStateProperty.all(
-                          AppTheme.primaryColor,
-                        ),
-                      ),
-                  child: Ink(
-                    decoration: BoxDecoration(
-                      gradient: AppTheme.primaryGradient,
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: Container(
+                // Center Illustration Stack
+                Center(
+                  child: SizedBox(
+                    width: 260,
+                    height: 260,
+                    child: Stack(
                       alignment: Alignment.center,
-                      height: 52,
+                      children: [
+                        // Decorative dots
+                        Positioned(
+                          left: 20,
+                          top: 100,
+                          child: Container(
+                            width: 8,
+                            height: 8,
+                            decoration: const BoxDecoration(
+                              color: Colors.amber,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          right: 30,
+                          top: 90,
+                          child: Container(
+                            width: 8,
+                            height: 8,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFF6750A4),
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          left: 60,
+                          top: 210,
+                          child: Container(
+                            width: 6,
+                            height: 6,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFF6750A4),
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ),
+
+                        // Large backdrop circle
+                        Container(
+                          width: 190,
+                          height: 190,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFEADDFF).withOpacity(0.6),
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+
+                        // Purple Shopping Bag
+                        Positioned(
+                          bottom: 45,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // Handle
+                              Container(
+                                width: 44,
+                                height: 24,
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: const Color(0xFF6750A4),
+                                    width: 5,
+                                  ),
+                                  borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(22),
+                                    topRight: Radius.circular(22),
+                                  ),
+                                ),
+                              ),
+                              // Bag Body
+                              Container(
+                                width: 90,
+                                height: 84,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF6750A4),
+                                  borderRadius: BorderRadius.circular(16),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(0xFF6750A4).withOpacity(0.3),
+                                      blurRadius: 16,
+                                      offset: const Offset(0, 8),
+                                    ),
+                                  ],
+                                ),
+                                alignment: Alignment.center,
+                                child: CustomPaint(
+                                  size: const Size(40, 24),
+                                  painter: BirdPainter(),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // SALE badge (left)
+                        Positioned(
+                          left: 10,
+                          top: 75,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFEF3C7),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Text(
+                              'SALE',
+                              style: TextStyle(
+                                fontSize: 9,
+                                fontWeight: FontWeight.w900,
+                                color: Color(0xFFD97706),
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        // NEW IN badge (right)
+                        Positioned(
+                          right: 10,
+                          top: 85,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFD1FAE5),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Text(
+                              'NEW IN',
+                              style: TextStyle(
+                                fontSize: 9,
+                                fontWeight: FontWeight.w900,
+                                color: Color(0xFF059669),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 36),
+
+                // Welcome text Left Aligned
+                const Text(
+                  'Descubre moda que se adapta a ti',
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1C1B1F),
+                    height: 1.25,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Explora miles de prendas seleccionadas por expertos en estilo. Encuentra looks únicos para cada ocasión, directo desde tu móvil.',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Color(0xFF49454F),
+                    height: 1.5,
+                  ),
+                ),
+
+                const SizedBox(height: 48),
+
+                // CTA Button (Centered full-width or pill-shaped centered)
+                Center(
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () => context.go('/login'),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        backgroundColor: const Color(0xFF6750A4),
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(28), // Pill shape
+                        ),
+                        elevation: 0,
+                      ),
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Comenzar',
+                            'Siguiente',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
                             ),
                           ),
                           SizedBox(width: 8),
-                          Icon(
-                            Icons.arrow_forward,
-                            color: Colors.white,
-                            size: 20,
-                          ),
+                          Icon(Icons.arrow_forward, size: 18),
                         ],
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+
+                const SizedBox(height: 16),
               ],
             ),
           ),
@@ -146,48 +247,35 @@ class OnboardingPage extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildFeatureRow(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    required String description,
-  }) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: AppTheme.surfaceColor,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFF334155), width: 1),
-          ),
-          child: Icon(icon, color: AppTheme.primaryColor, size: 24),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                description,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(fontSize: 14),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
+class BirdPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3.5
+      ..strokeCap = StrokeCap.round;
+
+    final path = Path()
+      ..moveTo(size.width * 0.15, size.height * 0.6)
+      ..quadraticBezierTo(
+        size.width * 0.35,
+        size.height * 0.25,
+        size.width * 0.5,
+        size.height * 0.5,
+      )
+      ..quadraticBezierTo(
+        size.width * 0.65,
+        size.height * 0.25,
+        size.width * 0.85,
+        size.height * 0.6,
+      );
+
+    canvas.drawPath(path, paint);
   }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

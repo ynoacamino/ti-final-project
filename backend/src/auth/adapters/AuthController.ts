@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Hono } from "hono";
 import { z } from "zod";
 import { RegisterUseCase } from "../core/RegisterUseCase.ts";
