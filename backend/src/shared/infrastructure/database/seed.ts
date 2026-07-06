@@ -11,7 +11,7 @@ async function main() {
   const [existingAdmin] = await db.select().from(users).where(eq(users.email, adminEmail)).limit(1);
 
   if (!existingAdmin) {
-    const passwordHash = await bcrypt.hash("admin123456", 10);
+    const passwordHash = await bcrypt.hash("admin123", 10);
     await db.insert(users).values({
       id: crypto.randomUUID(),
       email: adminEmail,
@@ -20,9 +20,32 @@ async function main() {
       role: "admin",
       isActive: 1,
     });
-    console.log("✅ Admin user created: admin@smartpyme.com / admin123456");
+    console.log("✅ Admin user created: admin@smartpyme.com / admin123");
   } else {
-    console.log("ℹ️ Admin user already exists");
+    const passwordHash = await bcrypt.hash("admin123", 10);
+    await db.update(users).set({ passwordHash }).where(eq(users.email, adminEmail));
+    console.log("✅ Admin user password updated to: admin123");
+  }
+
+  // 1b. Seed Customer User
+  const customerEmail = "cliente@gmail.com";
+  const [existingCustomer] = await db.select().from(users).where(eq(users.email, customerEmail)).limit(1);
+
+  if (!existingCustomer) {
+    const passwordHash = await bcrypt.hash("client123", 10);
+    await db.insert(users).values({
+      id: crypto.randomUUID(),
+      email: customerEmail,
+      passwordHash,
+      name: "Alvaro Quispe (Cliente)",
+      role: "customer",
+      isActive: 1,
+    });
+    console.log("✅ Customer user created: cliente@gmail.com / client123");
+  } else {
+    const passwordHash = await bcrypt.hash("client123", 10);
+    await db.update(users).set({ passwordHash }).where(eq(users.email, customerEmail));
+    console.log("✅ Customer user password updated to: client123");
   }
 
   // 2. Seed Categories
