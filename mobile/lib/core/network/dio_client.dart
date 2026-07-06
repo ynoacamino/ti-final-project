@@ -48,6 +48,12 @@ class DioClient {
   }
 
   String _getBaseUrl() {
+    // Check if BASE_URL is injected via compile-time variables (--dart-define / --dart-define-from-file)
+    const envUrl = String.fromEnvironment('BASE_URL');
+    if (envUrl.isNotEmpty) {
+      return envUrl.endsWith('/api') ? envUrl : '$envUrl/api';
+    }
+
     if (kIsWeb) {
       return 'http://localhost:3000/api';
     }
