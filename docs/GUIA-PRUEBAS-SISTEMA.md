@@ -35,22 +35,30 @@ Para que la aplicación en tu celular se conecte con el servidor local de tu com
    hostname -I
    ```
    *(Por ejemplo, obtendrás: `192.168.1.45`)*
-3. Abre el archivo de configuración del cliente de red en el código móvil:
-   [mobile/lib/core/network/dio_client.dart](file:///home/alvaro9rqc/1_Pacha/1-unsa/7_S/ti/ti-final-project/mobile/lib/core/network/dio_client.dart)
-4. Modifica la propiedad `baseUrl` para apuntar a la IP de tu PC:
-   ```dart
-   static const String baseUrl = 'http://192.168.1.45:3000';
+3. **No modifiques el código fuente**. Simplemente abre el archivo de configuración de desarrollo:
+   [mobile/config/dev.json](file:///home/alvaro9rqc/1_Pacha/1-unsa/7_S/ti/ti-final-project/mobile/config/dev.json)
+4. Modifica el valor de `"BASE_URL"` para apuntar a la IP de tu PC:
+   ```json
+   {
+     "BASE_URL": "http://192.168.1.45:3000"
+   }
    ```
-5. Asegúrate de habilitar el tráfico por el puerto 3000 en tu PC:
+5. Inicia la aplicación en modo desarrollo apuntando a este archivo:
+   ```bash
+   flutter run --dart-define-from-file=config/dev.json
+   ```
+   *(O directamente por línea de comandos sin editar el JSON: `flutter run --dart-define=BASE_URL=http://192.168.1.45:3000`)*
+6. Asegúrate de habilitar el tráfico por el puerto 3000 en tu PC:
    ```bash
    sudo ufw allow 3000
    ```
 
 ### Opción B: Emulador de Android (Android Studio)
-1. El emulador enruta automáticamente el tráfico local a la dirección **`10.0.2.2`**.
-2. Cambia la propiedad `baseUrl` en [dio_client.dart](file:///home/alvaro9rqc/1_Pacha/1-unsa/7_S/ti/ti-final-project/mobile/lib/core/network/dio_client.dart) a:
-   ```dart
-   static const String baseUrl = 'http://10.0.2.2:3000';
+1. El emulador enruta automáticamente el tráfico local a la dirección **`10.0.2.2`** de manera interna.
+2. Por defecto, si no especificas ningún parámetro, la app móvil detecta el emulador y se conecta a `http://10.0.2.2:3000`.
+3. Puedes iniciar la app normalmente con `flutter run` o forzar la configuración con:
+   ```bash
+   flutter run --dart-define-from-file=config/dev.json
    ```
 
 ---
