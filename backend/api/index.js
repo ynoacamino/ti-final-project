@@ -360,7 +360,7 @@ var init_path = () => {};
 var ENCODINGS, ENCODINGS_ORDERED_KEYS, DEFAULT_DOCUMENT = "index.html", serveStatic = (options) => {
   const root = options.root ?? "./";
   const optionPath = options.path;
-  const join2 = options.join ?? defaultJoin;
+  const join3 = options.join ?? defaultJoin;
   return async (c, next) => {
     if (c.finalized) {
       return next();
@@ -379,17 +379,17 @@ var ENCODINGS, ENCODINGS_ORDERED_KEYS, DEFAULT_DOCUMENT = "index.html", serveSta
         return next();
       }
     }
-    let path2 = join2(root, !optionPath && options.rewriteRequestPath ? options.rewriteRequestPath(filename) : filename);
-    if (options.isDir && await options.isDir(path2)) {
-      path2 = join2(path2, DEFAULT_DOCUMENT);
+    let path3 = join3(root, !optionPath && options.rewriteRequestPath ? options.rewriteRequestPath(filename) : filename);
+    if (options.isDir && await options.isDir(path3)) {
+      path3 = join3(path3, DEFAULT_DOCUMENT);
     }
     const getContent = options.getContent;
-    let content = await getContent(path2, c);
+    let content = await getContent(path3, c);
     if (content instanceof Response) {
       return c.newResponse(content.body, content);
     }
     if (content) {
-      const mimeType = options.mimes && getMimeType(path2, options.mimes) || getMimeType(path2);
+      const mimeType = options.mimes && getMimeType(path3, options.mimes) || getMimeType(path3);
       c.header("Content-Type", mimeType || "application/octet-stream");
       if (options.precompressed && (!mimeType || COMPRESSIBLE_CONTENT_TYPE_REGEX.test(mimeType))) {
         const acceptEncodingSet = new Set(c.req.header("Accept-Encoding")?.split(",").map((encoding) => encoding.trim()));
@@ -397,7 +397,7 @@ var ENCODINGS, ENCODINGS_ORDERED_KEYS, DEFAULT_DOCUMENT = "index.html", serveSta
           if (!acceptEncodingSet.has(encoding)) {
             continue;
           }
-          const compressedContent = await getContent(path2 + ENCODINGS[encoding], c);
+          const compressedContent = await getContent(path3 + ENCODINGS[encoding], c);
           if (compressedContent) {
             content = compressedContent;
             c.header("Content-Encoding", encoding);
@@ -406,10 +406,10 @@ var ENCODINGS, ENCODINGS_ORDERED_KEYS, DEFAULT_DOCUMENT = "index.html", serveSta
           }
         }
       }
-      await options.onFound?.(path2, c);
+      await options.onFound?.(path3, c);
       return c.body(content);
     }
-    await options.onNotFound?.(path2, c);
+    await options.onNotFound?.(path3, c);
     await next();
     return;
   };
@@ -429,17 +429,17 @@ var init_serve_static = __esm(() => {
 
 // node_modules/.pnpm/hono@4.12.27/node_modules/hono/dist/adapter/bun/serve-static.js
 import { stat } from "node:fs/promises";
-import { join as join2 } from "node:path";
+import { join as join3 } from "node:path";
 var serveStatic2 = (options = {}) => {
   return async function serveStatic22(c, next) {
-    const getContent = async (path2) => {
-      const file2 = Bun.file(path2);
+    const getContent = async (path3) => {
+      const file2 = Bun.file(path3);
       return await file2.exists() ? file2 : null;
     };
-    const isDir = async (path2) => {
+    const isDir = async (path3) => {
       let isDir2;
       try {
-        const stats = await stat(path2);
+        const stats = await stat(path3);
         isDir2 = stats.isDirectory();
       } catch {}
       return isDir2;
@@ -447,7 +447,7 @@ var serveStatic2 = (options = {}) => {
     return serveStatic({
       ...options,
       getContent,
-      join: join2,
+      join: join3,
       isDir
     })(c, next);
   };
@@ -517,30 +517,30 @@ var init_handler = __esm(() => {
 });
 
 // node_modules/.pnpm/hono@4.12.27/node_modules/hono/dist/helper/ssg/utils.js
-var dirname2 = (path2) => {
-  const separatedPath = path2.split(/[\/\\]/);
+var dirname2 = (path3) => {
+  const separatedPath = path3.split(/[\/\\]/);
   return separatedPath.slice(0, -1).join("/");
-}, normalizePath = (path2) => {
-  return path2.replace(/(\\)/g, "/").replace(/\/$/g, "");
+}, normalizePath = (path3) => {
+  return path3.replace(/(\\)/g, "/").replace(/\/$/g, "");
 }, handleParent = (resultPaths, beforeParentFlag) => {
   if (resultPaths.length === 0 || beforeParentFlag) {
     resultPaths.push("..");
   } else {
     resultPaths.pop();
   }
-}, handleNonDot = (path2, resultPaths) => {
-  path2 = path2.replace(/^\.(?!.)/, "");
-  if (path2 !== "") {
-    resultPaths.push(path2);
+}, handleNonDot = (path3, resultPaths) => {
+  path3 = path3.replace(/^\.(?!.)/, "");
+  if (path3 !== "") {
+    resultPaths.push(path3);
   }
 }, handleSegments = (paths, resultPaths) => {
   let beforeParentFlag = false;
-  for (const path2 of paths) {
-    if (path2 === "..") {
+  for (const path3 of paths) {
+    if (path3 === "..") {
       handleParent(resultPaths, beforeParentFlag);
       beforeParentFlag = true;
     } else {
-      handleNonDot(path2, resultPaths);
+      handleNonDot(path3, resultPaths);
       beforeParentFlag = false;
     }
   }
@@ -550,15 +550,15 @@ var dirname2 = (path2) => {
   handleSegments(paths.join("/").split("/"), resultPaths);
   return (paths[0][0] === "/" ? "/" : "") + resultPaths.join("/");
 }, filterStaticGenerateRoutes = (hono) => {
-  return hono.routes.reduce((acc, { method, handler, path: path2 }) => {
+  return hono.routes.reduce((acc, { method, handler, path: path3 }) => {
     const targetHandler = findTargetHandler(handler);
     if (["GET", METHOD_NAME_ALL].includes(method) && !isMiddleware(targetHandler)) {
-      acc.push({ path: path2 });
+      acc.push({ path: path3 });
     }
     return acc;
   }, []);
-}, isDynamicRoute = (path2) => {
-  return path2.split("/").some((segment) => segment.startsWith(":") || segment.includes("*"));
+}, isDynamicRoute = (path3) => {
+  return path3.split("/").some((segment) => segment.startsWith(":") || segment.includes("*"));
 }, ensureWithinOutDir = (outDir, filePath) => {
   const normalizedOutDir = joinPaths("/", outDir);
   const normalizedFilePath = joinPaths("/", filePath);
@@ -766,7 +766,7 @@ var DEFAULT_CONCURRENCY2 = 2, DEFAULT_CONTENT_TYPE = "text/plain", DEFAULT_OUTPU
     await fsModule.writeFile(filePath, new Uint8Array(content));
   }
   return filePath;
-}, toSSG = async (app, fs2, options) => {
+}, toSSG = async (app, fs3, options) => {
   let result;
   const getInfoPromises = [];
   const savePromises = [];
@@ -806,7 +806,7 @@ var DEFAULT_CONCURRENCY2 = 2, DEFAULT_CONTENT_TYPE = "text/plain", DEFAULT_OUTPU
           return;
         }
         for (const content of getContentGen) {
-          savePromises.push(saveContentToFile(content, fs2, outputDir, options?.extensionMap).catch((e) => e));
+          savePromises.push(saveContentToFile(content, fs3, outputDir, options?.extensionMap).catch((e) => e));
         }
       }));
     }
@@ -826,8 +826,8 @@ var DEFAULT_CONCURRENCY2 = 2, DEFAULT_CONTENT_TYPE = "text/plain", DEFAULT_OUTPU
     result = { success: false, files: [], error: errorObj };
   }
   if (afterGenerateHooks.length > 0) {
-    const combinedAfterGenerateHooks = combineAfterGenerateHooks(afterGenerateHooks, fs2, options);
-    await combinedAfterGenerateHooks(result, fs2, options);
+    const combinedAfterGenerateHooks = combineAfterGenerateHooks(afterGenerateHooks, fs3, options);
+    await combinedAfterGenerateHooks(result, fs3, options);
   }
   return result;
 };
@@ -864,8 +864,8 @@ var init_ssg3 = __esm(() => {
   init_ssg2();
   ({ write } = Bun);
   bunFileSystemModule = {
-    writeFile: async (path2, data) => {
-      await write(path2, data);
+    writeFile: async (path3, data) => {
+      await write(path3, data);
     },
     mkdir: async () => {}
   };
@@ -24059,7 +24059,25 @@ var faqs = sqliteTable("faqs", {
 }));
 
 // src/shared/infrastructure/database/client.ts
+import * as fs from "fs";
+import * as path from "path";
 var url2 = process.env.DATABASE_URL || "file:smartpyme.db";
+if (process.env.VERCEL && url2.startsWith("file:")) {
+  const dbName = url2.substring(5);
+  const sourcePath = path.join(process.cwd(), dbName);
+  const destPath = path.join("/tmp", dbName);
+  try {
+    if (fs.existsSync(sourcePath)) {
+      if (!fs.existsSync(destPath)) {
+        fs.copyFileSync(sourcePath, destPath);
+        console.log(`Copied database from ${sourcePath} to ${destPath} to enable write operations`);
+      }
+      url2 = `file:${destPath}`;
+    }
+  } catch (err) {
+    console.error("Error setting up Vercel /tmp SQLite:", err);
+  }
+}
 var client = createClient2({
   url: url2
 });
@@ -24652,8 +24670,8 @@ class SqliteProductRepo {
 
 // src/catalog/adapters/StorageService.ts
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
-import * as fs from "fs";
-import * as path from "path";
+import * as fs2 from "fs";
+import * as path2 from "path";
 
 class StorageService {
   s3Client = null;
@@ -24678,10 +24696,10 @@ class StorageService {
   }
   async upload(fileBuffer, fileName, contentType, origin) {
     if (this.isMock) {
-      const relativePath = path.join("public", "uploads", fileName);
-      const fullPath = path.join(process.cwd(), relativePath);
-      fs.mkdirSync(path.dirname(fullPath), { recursive: true });
-      fs.writeFileSync(fullPath, fileBuffer);
+      const relativePath = path2.join("public", "uploads", fileName);
+      const fullPath = path2.join(process.cwd(), relativePath);
+      fs2.mkdirSync(path2.dirname(fullPath), { recursive: true });
+      fs2.writeFileSync(fullPath, fileBuffer);
       const baseOrigin = origin || `http://localhost:${process.env.PORT || 3000}`;
       return `${baseOrigin}/uploads/${fileName}`;
     }
@@ -24703,9 +24721,9 @@ class StorageService {
       const parts = fileUrl.split("/uploads/");
       const fileName = parts[1];
       if (fileName) {
-        const fullPath = path.join(process.cwd(), "public", "uploads", fileName);
-        if (fs.existsSync(fullPath)) {
-          fs.unlinkSync(fullPath);
+        const fullPath = path2.join(process.cwd(), "public", "uploads", fileName);
+        if (fs2.existsSync(fullPath)) {
+          fs2.unlinkSync(fullPath);
         }
       }
       return;
@@ -25511,7 +25529,7 @@ class HttpClient {
   getClientName() {
     throw new Error("getClientName not implemented.");
   }
-  makeRequest(host, port, path2, method, headers, requestData, protocol, timeout) {
+  makeRequest(host, port, path3, method, headers, requestData, protocol, timeout) {
     throw new Error("makeRequest not implemented.");
   }
   static makeTimeoutError() {
@@ -25783,11 +25801,11 @@ function dateTimeReplacer(key, value) {
 function jsonStringifyRequestData(data) {
   return JSON.stringify(data, dateTimeReplacer);
 }
-function getAPIMode(path2) {
-  if (!path2) {
+function getAPIMode(path3) {
+  if (!path3) {
     return "v1";
   }
-  return path2.startsWith("/v2") ? "v2" : "v1";
+  return path3.startsWith("/v2") ? "v2" : "v1";
 }
 function parseHttpHeaderAsString(header) {
   if (Array.isArray(header)) {
@@ -26060,7 +26078,7 @@ class RequestSender {
       }
     }
   }
-  _rawRequest(method, path2, params, options, usage) {
+  _rawRequest(method, path3, params, options, usage) {
     return new Promise((resolve, reject) => {
       try {
         const requestMethod = method.toUpperCase();
@@ -26074,7 +26092,7 @@ class RequestSender {
         }
         const apiBase = processed.apiBase || (options?.apiBase ?? null);
         const host = apiBase ? this._stripe.resolveBaseAddress(apiBase) : null;
-        this._request(requestMethod, host, path2, data, processed.authenticator, {
+        this._request(requestMethod, host, path3, data, processed.authenticator, {
           headers: processed.headers,
           settings: processed.settings,
           streaming: processed.streaming
@@ -26093,10 +26111,10 @@ class RequestSender {
   _getContentLength(data) {
     return typeof data === "string" ? new TextEncoder().encode(data).length : data.length;
   }
-  _request(method, host, path2, data, authenticator, options, usage = [], callback, requestDataProcessor = null) {
+  _request(method, host, path3, data, authenticator, options, usage = [], callback, requestDataProcessor = null) {
     let requestData;
     authenticator = authenticator ?? this._stripe._authenticator;
-    const apiMode = getAPIMode(path2);
+    const apiMode = getAPIMode(path3);
     const retryRequest = (requestFn, apiVersion, headers, requestRetries, retryAfter) => {
       return setTimeout(requestFn, this._getSleepTimeInMS(requestRetries, retryAfter), apiVersion, headers, requestRetries + 1);
     };
@@ -26105,7 +26123,7 @@ class RequestSender {
       const request = {
         host: host || this._stripe.getApiField("host"),
         port: this._stripe.getApiField("port"),
-        path: path2,
+        path: path3,
         method,
         headers: Object.assign({}, headers),
         body: requestData,
@@ -26122,7 +26140,7 @@ class RequestSender {
           account: parseHttpHeaderAsString(headers["Stripe-Account"]),
           idempotency_key: parseHttpHeaderAsString(headers["Idempotency-Key"]),
           method,
-          path: path2,
+          path: path3,
           body: this._stripe.getEmitEventBodiesEnabled() ? data ?? undefined : undefined,
           request_start_time: requestStartTime
         });
@@ -26622,14 +26640,14 @@ var coerceV2ResponseData = (data, schema) => {
 
 // node_modules/.pnpm/stripe@22.3.0_@types+node@26.1.0/node_modules/stripe/esm/autoPagination.js
 class V1Iterator {
-  constructor(firstPagePromise, params, options, method, path2, spec, stripeResource) {
+  constructor(firstPagePromise, params, options, method, path3, spec, stripeResource) {
     this.index = 0;
     this.pagePromise = firstPagePromise;
     this.promiseCache = { currentPromise: null };
     this.params = params;
     this.options = options;
     this.method = method;
-    this.path = path2;
+    this.path = path3;
     this.spec = spec;
     this.stripeResource = stripeResource;
   }
@@ -26756,14 +26774,14 @@ class V2ListIterator {
     return nextPromise;
   }
 }
-var makeAutoPaginationMethods = (stripeResource, params, options, method, path2, spec, firstPagePromise) => {
-  const apiMode = getAPIMode(path2);
+var makeAutoPaginationMethods = (stripeResource, params, options, method, path3, spec, firstPagePromise) => {
+  const apiMode = getAPIMode(path3);
   const methodType = spec?.methodType;
   if (apiMode !== "v2" && methodType === "search") {
-    return makeAutoPaginationMethodsFromIterator(new V1SearchIterator(firstPagePromise, params, options, method, path2, spec, stripeResource));
+    return makeAutoPaginationMethodsFromIterator(new V1SearchIterator(firstPagePromise, params, options, method, path3, spec, stripeResource));
   }
   if (apiMode !== "v2" && methodType === "list") {
-    return makeAutoPaginationMethodsFromIterator(new V1ListIterator(firstPagePromise, params, options, method, path2, spec, stripeResource));
+    return makeAutoPaginationMethodsFromIterator(new V1ListIterator(firstPagePromise, params, options, method, path3, spec, stripeResource));
   }
   if (apiMode === "v2" && methodType === "list") {
     return makeAutoPaginationMethodsFromIterator(new V2ListIterator(firstPagePromise, options, spec, stripeResource));
@@ -26917,7 +26935,7 @@ class StripeResource {
     this.initialize(stripe, deprecatedUrlData);
   }
   initialize(_stripe, _deprecatedUrlData) {}
-  _makeRequest(method, path2, params, options, spec) {
+  _makeRequest(method, path3, params, options, spec) {
     const requestMethod = method.toUpperCase();
     const encode5 = spec?.encode || ((data2) => data2);
     const data = encode5(params ? { ...params } : {});
@@ -26959,7 +26977,7 @@ class StripeResource {
       }
       const emptyQuery = Object.keys(queryData).length === 0;
       const fullPath = [
-        path2,
+        path3,
         emptyQuery ? "" : "?",
         queryStringifyRequestData(queryData)
       ].join("");
@@ -26970,7 +26988,7 @@ class StripeResource {
       }, usage, requestCallback, this.requestDataProcessor?.bind(this));
     });
     if (spec?.methodType) {
-      Object.assign(innerPromise, makeAutoPaginationMethods(this, params ? { ...params } : {}, options, requestMethod, path2, spec, innerPromise));
+      Object.assign(innerPromise, makeAutoPaginationMethods(this, params ? { ...params } : {}, options, requestMethod, path3, spec, innerPromise));
     }
     return innerPromise;
   }
@@ -27062,7 +27080,7 @@ class NodeHttpClient extends HttpClient {
   getClientName() {
     return "node";
   }
-  makeRequest(host, port, path2, method, headers, requestData, protocol, timeout) {
+  makeRequest(host, port, path3, method, headers, requestData, protocol, timeout) {
     const isInsecureConnection = protocol === "http";
     let agent = this._agent;
     if (!agent) {
@@ -27072,7 +27090,7 @@ class NodeHttpClient extends HttpClient {
       const req = (isInsecureConnection ? http : https).request({
         host,
         port,
-        path: path2,
+        path: path3,
         method,
         agent,
         headers,
@@ -27197,12 +27215,12 @@ class FetchHttpClient extends HttpClient {
   getClientName() {
     return "fetch";
   }
-  async makeRequest(host, port, path2, method, headers, requestData, protocol, timeout) {
+  async makeRequest(host, port, path3, method, headers, requestData, protocol, timeout) {
     const isInsecureConnection = protocol === "http";
-    if (!path2.startsWith("/")) {
-      throw new Error(`Only relative paths are supported, got: "${path2}"`);
+    if (!path3.startsWith("/")) {
+      throw new Error(`Only relative paths are supported, got: "${path3}"`);
     }
-    const url3 = new URL(`${isInsecureConnection ? "http" : "https"}://${host}${path2}`);
+    const url3 = new URL(`${isInsecureConnection ? "http" : "https"}://${host}${path3}`);
     url3.port = port;
     const methodHasPayload = method == "POST" || method == "PUT" || method == "PATCH";
     const body = requestData || (methodHasPayload ? "" : undefined);
@@ -35618,9 +35636,9 @@ class OAuthResource extends StripeResource {
   authorizeUrl(params, options) {
     params = params || {};
     options = options || {};
-    let path2 = "oauth/authorize";
+    let path3 = "oauth/authorize";
     if (options.express) {
-      path2 = `express/${path2}`;
+      path3 = `express/${path3}`;
     }
     if (!params.response_type) {
       params.response_type = "code";
@@ -35632,7 +35650,7 @@ class OAuthResource extends StripeResource {
       params.scope = "read_write";
     }
     const connectHost = this._stripe.resolveBaseAddress("connect");
-    return `https://${connectHost}/${path2}?${queryStringifyRequestData(params)}`;
+    return `https://${connectHost}/${path3}?${queryStringifyRequestData(params)}`;
   }
   token(params, options) {
     return this._makeRequest("POST", "/oauth/token", params, options, {
@@ -39803,8 +39821,8 @@ class Stripe {
     this.account = this.accounts;
     this.oauth = new OAuthResource(this);
   }
-  rawRequest(method, path2, params, options) {
-    return this._requestSender._rawRequest(method, path2, params, options);
+  rawRequest(method, path3, params, options) {
+    return this._requestSender._rawRequest(method, path3, params, options);
   }
   _setAuthenticator(key, authenticator) {
     if (key && authenticator) {
@@ -40728,6 +40746,7 @@ ordersRouter.post("/checkout", async (c) => {
       clientSecret: result.clientSecret
     }, 201);
   } catch (error51) {
+    console.error("Checkout error:", error51);
     return c.json({ success: false, error: error51.message }, 400);
   }
 });
@@ -40741,6 +40760,7 @@ ordersRouter.post("/payments/confirm", async (c) => {
     const order = await confirmPaymentUseCase.execute(validation.data);
     return c.json({ success: true, order }, 200);
   } catch (error51) {
+    console.error("Confirm payment error:", error51);
     return c.json({ success: false, error: error51.message }, 400);
   }
 });
