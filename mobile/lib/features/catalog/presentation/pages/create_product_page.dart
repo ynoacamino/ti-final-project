@@ -28,7 +28,7 @@ class _CreateProductPageState extends ConsumerState<CreateProductPage>
   bool _chargeTax = true;
   bool _isPublishing = false;
 
-  // Selected Images from our mock gallery (or custom input)
+  // Selected Images from our mock gallery
   final List<String> _selectedImages = [];
   
   // List of product variants
@@ -98,13 +98,13 @@ class _CreateProductPageState extends ConsumerState<CreateProductPage>
                 TextField(
                   controller: sizeController,
                   style: const TextStyle(color: AppTheme.darkTextPrimary),
-                  decoration: const InputDecoration(labelText: 'Talla / Tamaño (e.g. S, M, L, 32)'),
+                  decoration: const InputDecoration(labelText: 'Talla / Tamaño (ej. S, M, L, 32)'),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: colorController,
                   style: const TextStyle(color: AppTheme.darkTextPrimary),
-                  decoration: const InputDecoration(labelText: 'Color (e.g. Negro, Azul, Rojo)'),
+                  decoration: const InputDecoration(labelText: 'Color (ej. Negro, Azul, Rojo)'),
                 ),
                 const SizedBox(height: 12),
                 TextField(
@@ -252,7 +252,7 @@ class _CreateProductPageState extends ConsumerState<CreateProductPage>
 
   Future<void> _publishProduct() async {
     if (!_formKey.currentState!.validate()) {
-      _tabController.animateTo(0); // Go back to general info if empty
+      _tabController.animateTo(0); // Regresar a info general si hay campos vacíos
       return;
     }
 
@@ -270,7 +270,7 @@ class _CreateProductPageState extends ConsumerState<CreateProductPage>
     if (_variants.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Debes añadir al menos una variante de talla y color.'),
+          content: Text('Debes añadir al menos una variante de talla y color en la sección de Variantes.'),
           backgroundColor: AppTheme.errorColor,
         ),
       );
@@ -307,18 +307,10 @@ class _CreateProductPageState extends ConsumerState<CreateProductPage>
       return;
     }
 
-    // 2. Upload images (simulated / linking by adding image URLs or upload images endpoint)
-    // To make it functional in the demo and backend:
-    // If the backend has image uploading via /api/products/:id/images, we upload them.
-    // For the demonstration, we'll associate the image URLs in the backend by creating appropriate seed/images.
-    // Wait, the API endpoint is `/api/products/:id/images` which uploads a file buffer.
-    // In our mobile, since we are selecting remote demo URLs, we can:
-    // Simply fetch the image and upload it to the backend endpoint! That way, it's 100% functional and shows actual uploaded pictures!
-    // Let's implement actual uploading:
+    // 2. Upload images
     try {
       final dioClient = ref.read(dioClientProvider);
       for (final imageUrl in _selectedImages) {
-        // Fetch image bytes
         final response = await dioClient.dio.get<List<int>>(
           imageUrl,
           options: Options(responseType: ResponseType.bytes),
@@ -338,8 +330,7 @@ class _CreateProductPageState extends ConsumerState<CreateProductPage>
         }
       }
     } catch (e) {
-      // If image upload fails, print or let it pass so the product is still created
-      debugPrint('Error uploading image to backend: $e');
+      debugPrint('Error subiendo imágenes al backend: $e');
     }
 
     if (mounted) {
@@ -370,7 +361,7 @@ class _CreateProductPageState extends ConsumerState<CreateProductPage>
         title: Column(
           children: const [
             Text(
-              'NEW PRODUCT',
+              'NUEVO PRODUCTO',
               style: TextStyle(
                 fontSize: 10,
                 color: AppTheme.darkTextSecondary,
@@ -380,7 +371,7 @@ class _CreateProductPageState extends ConsumerState<CreateProductPage>
             ),
             SizedBox(height: 2),
             Text(
-              'Create Listing',
+              'Crear Publicación',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w900,
@@ -389,23 +380,17 @@ class _CreateProductPageState extends ConsumerState<CreateProductPage>
             ),
           ],
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.more_vert, color: AppTheme.darkTextPrimary),
-            onPressed: () {},
-          ),
-        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
             child: Row(
               children: [
-                _buildTabButton(0, 'General Info', Icons.inventory_2_outlined),
+                _buildTabButton(0, 'Datos Generales', Icons.inventory_2_outlined),
                 const SizedBox(width: 8),
-                _buildTabButton(1, 'Variants', Icons.layers_outlined),
+                _buildTabButton(1, 'Variantes', Icons.layers_outlined),
                 const SizedBox(width: 8),
-                _buildTabButton(2, 'Images Gallery', Icons.image_outlined),
+                _buildTabButton(2, 'Imágenes', Icons.image_outlined),
               ],
             ),
           ),
@@ -415,7 +400,7 @@ class _CreateProductPageState extends ConsumerState<CreateProductPage>
         key: _formKey,
         child: TabBarView(
           controller: _tabController,
-          physics: const NeverScrollableScrollPhysics(), // Control tab manually
+          physics: const NeverScrollableScrollPhysics(),
           children: [
             // Tab 1: General Info
             _buildGeneralInfoTab(categoriesAsync),
@@ -426,57 +411,59 @@ class _CreateProductPageState extends ConsumerState<CreateProductPage>
           ],
         ),
       ),
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(
-          color: AppTheme.darkSurface,
-          border: Border(top: BorderSide(color: Color(0x17818CF8), width: 1)),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              flex: 2,
-              child: OutlinedButton(
-                onPressed: () => context.pop(),
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 52),
-                  side: const BorderSide(color: AppTheme.darkTextSecondary),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+      bottomNavigationBar: SafeArea(
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
+          decoration: const BoxDecoration(
+            color: AppTheme.darkSurface,
+            border: Border(top: BorderSide(color: Color(0x17818CF8), width: 1)),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: OutlinedButton(
+                  onPressed: () => context.pop(),
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 52),
+                    side: const BorderSide(color: AppTheme.darkTextSecondary),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    'Guardar Borrador',
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                   ),
                 ),
-                child: const Text(
-                  'Save Draft',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                ),
               ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              flex: 3,
-              child: ElevatedButton(
-                onPressed: _isPublishing ? null : _publishProduct,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFEAB308), // Elegant Amber gold from UI Mockup
-                  foregroundColor: Colors.black,
-                  minimumSize: const Size(double.infinity, 52),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+              const SizedBox(width: 16),
+              Expanded(
+                flex: 3,
+                child: ElevatedButton(
+                  onPressed: _isPublishing ? null : _publishProduct,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFEAB308),
+                    foregroundColor: Colors.black,
+                    minimumSize: const Size(double.infinity, 52),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
+                  child: _isPublishing
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2),
+                        )
+                      : const Text(
+                          'Publicar Producto',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                        ),
                 ),
-                child: _isPublishing
-                    ? const SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2),
-                      )
-                    : const Text(
-                        'Publish Product',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                      ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -484,6 +471,9 @@ class _CreateProductPageState extends ConsumerState<CreateProductPage>
 
   Widget _buildTabButton(int index, String label, IconData icon) {
     final isSelected = _tabController.index == index;
+    final isVariantsTab = index == 1;
+    final isVariantsEmpty = isVariantsTab && _variants.isEmpty;
+
     return Expanded(
       child: GestureDetector(
         onTap: () {
@@ -494,26 +484,36 @@ class _CreateProductPageState extends ConsumerState<CreateProductPage>
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFFEAB308) : Colors.transparent,
+            color: isSelected
+                ? (isVariantsEmpty ? AppTheme.errorColor.withOpacity(0.8) : const Color(0xFFEAB308))
+                : Colors.transparent,
             borderRadius: BorderRadius.circular(100),
-            border: isSelected ? null : Border.all(color: Colors.white10),
+            border: Border.all(
+              color: isSelected
+                  ? Colors.transparent
+                  : (isVariantsEmpty ? AppTheme.errorColor.withOpacity(0.5) : Colors.white10),
+            ),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
                 icon,
-                color: isSelected ? Colors.black : AppTheme.darkTextSecondary,
+                color: isSelected
+                    ? Colors.black
+                    : (isVariantsEmpty ? AppTheme.errorColor : AppTheme.darkTextSecondary),
                 size: 16,
               ),
               const SizedBox(width: 6),
               Flexible(
                 child: Text(
-                  label,
+                  isVariantsTab ? '$label (${_variants.length})' : label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    color: isSelected ? Colors.black : AppTheme.darkTextSecondary,
+                    color: isSelected
+                        ? Colors.black
+                        : (isVariantsEmpty ? AppTheme.errorColor : AppTheme.darkTextSecondary),
                     fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                     fontSize: 11,
                   ),
@@ -533,7 +533,7 @@ class _CreateProductPageState extends ConsumerState<CreateProductPage>
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Name Field
-          _buildFieldHeader('PRODUCT NAME', '0/120'),
+          _buildFieldHeader('NOMBRE DEL PRODUCTO', '0/120'),
           TextFormField(
             controller: _nameController,
             maxLength: 120,
@@ -546,13 +546,13 @@ class _CreateProductPageState extends ConsumerState<CreateProductPage>
             },
             buildCounter: (context, {required currentLength, required isFocused, maxLength}) => const SizedBox.shrink(),
             decoration: const InputDecoration(
-              hintText: 'e.g. Obsidian Leather Tote',
+              hintText: 'ej. Bolso de Cuero premium',
             ),
           ),
           const SizedBox(height: 24),
 
           // Category Select
-          _buildFieldHeader('CATEGORY', ''),
+          _buildFieldHeader('CATEGORÍA', ''),
           categoriesAsync.when(
             data: (categories) {
               return DropdownButtonFormField<String>(
@@ -560,7 +560,7 @@ class _CreateProductPageState extends ConsumerState<CreateProductPage>
                 dropdownColor: AppTheme.darkSurface,
                 style: const TextStyle(color: AppTheme.darkTextPrimary),
                 decoration: const InputDecoration(
-                  hintText: 'Select a category',
+                  hintText: 'Seleccionar categoría',
                 ),
                 items: categories.map((cat) {
                   return DropdownMenuItem<String>(
@@ -589,7 +589,7 @@ class _CreateProductPageState extends ConsumerState<CreateProductPage>
           const SizedBox(height: 24),
 
           // Description Field
-          _buildFieldHeader('DESCRIPTION', '0/2000'),
+          _buildFieldHeader('DESCRIPCIÓN', '0/2000'),
           TextFormField(
             controller: _descriptionController,
             maxLines: 4,
@@ -597,7 +597,7 @@ class _CreateProductPageState extends ConsumerState<CreateProductPage>
             style: const TextStyle(color: AppTheme.darkTextPrimary),
             buildCounter: (context, {required currentLength, required isFocused, maxLength}) => const SizedBox.shrink(),
             decoration: const InputDecoration(
-              hintText: 'Describe the product in detail — materials, dimensions, care instructions, and unique selling points...',
+              hintText: 'Describe el producto en detalle — materiales, dimensiones, instrucciones de cuidado y puntos clave de venta...',
             ),
           ),
           const SizedBox(height: 24),
@@ -609,7 +609,7 @@ class _CreateProductPageState extends ConsumerState<CreateProductPage>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildFieldHeader('BASE PRICE', ''),
+                    _buildFieldHeader('PRECIO BASE', ''),
                     TextFormField(
                       controller: _basePriceController,
                       keyboardType: TextInputType.number,
@@ -633,7 +633,7 @@ class _CreateProductPageState extends ConsumerState<CreateProductPage>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildFieldHeader('COMPARE AT', ''),
+                    _buildFieldHeader('COMPARAR CON', ''),
                     TextFormField(
                       controller: _comparePriceController,
                       keyboardType: TextInputType.number,
@@ -664,7 +664,7 @@ class _CreateProductPageState extends ConsumerState<CreateProductPage>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: const [
                       Text(
-                        'Charge tax on this product',
+                        'Cobrar impuestos en este producto',
                         style: TextStyle(
                           color: AppTheme.darkTextPrimary,
                           fontWeight: FontWeight.bold,
@@ -673,7 +673,7 @@ class _CreateProductPageState extends ConsumerState<CreateProductPage>
                       ),
                       SizedBox(height: 4),
                       Text(
-                        'Applies regional tax rates at checkout',
+                        'Aplica tasas de impuestos regionales en el pago',
                         style: TextStyle(
                           color: AppTheme.darkTextSecondary,
                           fontSize: 12,
@@ -694,63 +694,7 @@ class _CreateProductPageState extends ConsumerState<CreateProductPage>
               ],
             ),
           ),
-          const SizedBox(height: 24),
-
-          // Quick Attach Media
-          _buildFieldHeader('QUICK ATTACH MEDIA', ''),
-          GestureDetector(
-            onTap: _showMediaPicker,
-            child: Container(
-              height: 100,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: const Color(0xFFEAB308).withOpacity(0.3),
-                  style: BorderStyle.values[1], // Dotted/dashed style via painting inside card or border
-                ),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    margin: const EdgeInsets.all(12),
-                    width: 76,
-                    height: 76,
-                    decoration: BoxDecoration(
-                      color: AppTheme.darkSurface,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.white10),
-                    ),
-                    child: const Icon(Icons.add, color: AppTheme.darkTextSecondary),
-                  ),
-                  Expanded(
-                    child: _selectedImages.isEmpty
-                        ? const Text(
-                            'Tap to link mock photos to this product',
-                            style: TextStyle(color: AppTheme.darkTextSecondary, fontSize: 13),
-                          )
-                        : ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: _selectedImages.length,
-                            itemBuilder: (context, index) {
-                              return Padding(
-                                padding: const EdgeInsets.only(right: 8, top: 12, bottom: 12),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(6),
-                                  child: Image.network(
-                                    _selectedImages[index],
-                                    width: 76,
-                                    height: 76,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+          const SizedBox(height: 12),
         ],
       ),
     );
@@ -766,7 +710,7 @@ class _CreateProductPageState extends ConsumerState<CreateProductPage>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                'PRODUCT VARIANTS',
+                'VARIANTES DEL PRODUCTO',
                 style: TextStyle(
                   color: AppTheme.darkTextSecondary,
                   fontSize: 12,
@@ -783,7 +727,7 @@ class _CreateProductPageState extends ConsumerState<CreateProductPage>
                   side: const BorderSide(color: Color(0x22EAB308)),
                 ),
                 icon: const Icon(Icons.add, size: 16),
-                label: const Text('Add Variant', style: TextStyle(fontSize: 12)),
+                label: const Text('Añadir Variante', style: TextStyle(fontSize: 12)),
               ),
             ],
           ),
@@ -792,7 +736,7 @@ class _CreateProductPageState extends ConsumerState<CreateProductPage>
             child: _variants.isEmpty
                 ? const Center(
                     child: Text(
-                      'No variants added yet.\nEvery product needs at least one variant.',
+                      'Aún no se han añadido variantes.\nCada producto necesita al menos una variante.',
                       style: TextStyle(color: AppTheme.darkTextSecondary),
                       textAlign: TextAlign.center,
                     ),
@@ -875,7 +819,7 @@ class _CreateProductPageState extends ConsumerState<CreateProductPage>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                'IMAGES GALLERY',
+                'GALERÍA DE IMÁGENES',
                 style: TextStyle(
                   color: AppTheme.darkTextSecondary,
                   fontSize: 12,
@@ -892,7 +836,7 @@ class _CreateProductPageState extends ConsumerState<CreateProductPage>
                   side: const BorderSide(color: Color(0x22EAB308)),
                 ),
                 icon: const Icon(Icons.add_photo_alternate_outlined, size: 16),
-                label: const Text('Select Photos', style: TextStyle(fontSize: 12)),
+                label: const Text('Seleccionar Fotos', style: TextStyle(fontSize: 12)),
               ),
             ],
           ),
@@ -901,7 +845,7 @@ class _CreateProductPageState extends ConsumerState<CreateProductPage>
             child: _selectedImages.isEmpty
                 ? const Center(
                     child: Text(
-                      'No images selected yet.\nTap "Select Photos" to add clothing images to the gallery.',
+                      'Aún no se han seleccionado imágenes.\nToca "Seleccionar Fotos" para añadir imágenes de prendas a la galería.',
                       style: TextStyle(color: AppTheme.darkTextSecondary),
                       textAlign: TextAlign.center,
                     ),
