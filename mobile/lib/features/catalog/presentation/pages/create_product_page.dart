@@ -321,6 +321,7 @@ class _CreateProductPageState extends ConsumerState<CreateProductPage>
             'file': MultipartFile.fromBytes(
               bytes,
               filename: 'product_image.jpg',
+              contentType: DioMediaType.parse('image/jpeg'),
             ),
           });
           await dioClient.dio.post(

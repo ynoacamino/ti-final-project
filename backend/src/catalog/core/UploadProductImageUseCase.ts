@@ -42,7 +42,12 @@ export class UploadProductImageUseCase implements IUploadProductImageUseCase {
     const bucketKey = `products/${product.id}/${uniqueId}.${extension}`;
 
     // 5. Upload buffer to S3/R2 storage service
-    const fileUrl = await this.storageService.upload(dto.fileBuffer, bucketKey, dto.contentType);
+    const fileUrl = await this.storageService.upload(
+      dto.fileBuffer,
+      bucketKey,
+      dto.contentType,
+      dto.origin,
+    );
 
     // 6. Create image domain entity
     const newImage = ProductImage.create({

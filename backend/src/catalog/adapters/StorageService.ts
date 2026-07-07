@@ -44,7 +44,12 @@ export class StorageService implements IStorageService {
   /**
    *
    */
-  async upload(fileBuffer: Buffer, fileName: string, contentType: string): Promise<string> {
+  async upload(
+    fileBuffer: Buffer,
+    fileName: string,
+    contentType: string,
+    origin?: string,
+  ): Promise<string> {
     if (this.isMock) {
       // Local fallback storage
       const relativePath = path.join("public", "uploads", fileName);
@@ -56,9 +61,9 @@ export class StorageService implements IStorageService {
       // Save buffer to file
       fs.writeFileSync(fullPath, fileBuffer);
 
-      // Return local URL
-      const port = process.env.PORT || 3000;
-      return `http://localhost:${port}/uploads/${fileName}`;
+      // Return local URL with dynamically provided origin or default localhost
+      const baseOrigin = origin || `http://localhost:${process.env.PORT || 3000}`;
+      return `${baseOrigin}/uploads/${fileName}`;
     }
 
     // Cloudflare R2 Upload

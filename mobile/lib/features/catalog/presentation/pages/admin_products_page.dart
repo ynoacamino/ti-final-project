@@ -54,6 +54,8 @@ class _AdminProductsPageState extends ConsumerState<AdminProductsPage> {
                   ? null
                   : () async {
                       setState(() => _isDeleting = true);
+                      // Capture messenger reference before context is popped and before async gap
+                      final messenger = ScaffoldMessenger.of(context);
                       Navigator.of(context).pop();
 
                       final repo = ref.read(catalogRepositoryProvider);
@@ -61,7 +63,7 @@ class _AdminProductsPageState extends ConsumerState<AdminProductsPage> {
 
                       if (mounted) {
                         setState(() => _isDeleting = false);
-                        ScaffoldMessenger.of(context).showSnackBar(
+                        messenger.showSnackBar(
                           SnackBar(
                             content: Text(
                               success
@@ -97,6 +99,10 @@ class _AdminProductsPageState extends ConsumerState<AdminProductsPage> {
     return Scaffold(
       backgroundColor: AppTheme.darkBackground,
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: AppTheme.darkTextPrimary),
+          onPressed: () => context.pop(),
+        ),
         title: const Text('Administrar Catálogo'),
         backgroundColor: AppTheme.darkSurface,
         foregroundColor: AppTheme.darkTextPrimary,
@@ -162,7 +168,12 @@ class _AdminProductsPageState extends ConsumerState<AdminProductsPage> {
                 }
 
                 return ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.only(
+                    left: 16,
+                    right: 16,
+                    bottom: 120, // Prevents FloatingActionButton from overlapping the last item
+                  ),
                   itemCount: filtered.length,
                   itemBuilder: (context, index) {
                     final product = filtered[index];

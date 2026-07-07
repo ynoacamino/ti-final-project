@@ -174,11 +174,13 @@ catalogRouter.post("/products/:id/images", authMiddleware(["admin"]), async (c) 
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
+    const origin = new URL(c.req.url).origin;
     const image = await uploadProductImageUseCase.execute({
       productId,
       fileBuffer: buffer,
       fileName: file.name,
       contentType: file.type,
+      origin,
     });
 
     return c.json({ success: true, image }, 201);
@@ -196,7 +198,8 @@ catalogRouter.delete("/products/:id", authMiddleware(["admin"]), async (c) => {
     const id = c.req.param("id");
     const product = await productRepo.findById(id);
     if (!product) {
-      return c.json({ success: false, error: "Product not found" }, 404);
+      // Idempotent delete: if product is already gone, return success
+      return c.json({ success: true, message: "Product deleted successfully (already gone)" }, 200);
     }
     await productRepo.delete(id);
     return c.json({ success: true, message: "Product deleted successfully" }, 200);

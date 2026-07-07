@@ -65716,7 +65716,7 @@ class UploadProductImageUseCase {
     const uniqueId = crypto.randomUUID();
     const extension2 = dto.fileName.split(".").pop() || "jpg";
     const bucketKey = `products/${product.id}/${uniqueId}.${extension2}`;
-    const fileUrl = await this.storageService.upload(dto.fileBuffer, bucketKey, dto.contentType);
+    const fileUrl = await this.storageService.upload(dto.fileBuffer, bucketKey, dto.contentType, dto.origin);
     const newImage = ProductImage.create({
       id: uniqueId,
       productId: product.id,
@@ -65953,14 +65953,14 @@ class StorageService {
       });
     }
   }
-  async upload(fileBuffer, fileName, contentType) {
+  async upload(fileBuffer, fileName, contentType, origin) {
     if (this.isMock) {
       const relativePath = path.join("public", "uploads", fileName);
       const fullPath = path.join(process.cwd(), relativePath);
       fs.mkdirSync(path.dirname(fullPath), { recursive: true });
       fs.writeFileSync(fullPath, fileBuffer);
-      const port = process.env.PORT || 3000;
-      return `http://localhost:${port}/uploads/${fileName}`;
+      const baseOrigin = origin || `http://localhost:${process.env.PORT || 3000}`;
+      return `${baseOrigin}/uploads/${fileName}`;
     }
     const command = new import_client_s3.PutObjectCommand({
       Bucket: this.bucketName,
@@ -66103,11 +66103,13 @@ catalogRouter.post("/products/:id/images", authMiddleware(["admin"]), async (c) 
     }
     const arrayBuffer = await file2.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
+    const origin = new URL(c.req.url).origin;
     const image = await uploadProductImageUseCase.execute({
       productId,
       fileBuffer: buffer,
       fileName: file2.name,
-      contentType: file2.type
+      contentType: file2.type,
+      origin
     });
     return c.json({ success: true, image }, 201);
   } catch (error51) {
@@ -66119,7 +66121,7 @@ catalogRouter.delete("/products/:id", authMiddleware(["admin"]), async (c) => {
     const id = c.req.param("id");
     const product = await productRepo.findById(id);
     if (!product) {
-      return c.json({ success: false, error: "Product not found" }, 404);
+      return c.json({ success: true, message: "Product deleted successfully (already gone)" }, 200);
     }
     await productRepo.delete(id);
     return c.json({ success: true, message: "Product deleted successfully" }, 200);

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/core/theme/app_theme.dart';
+import 'package:mobile/features/auth/presentation/providers/auth_provider.dart';
 import 'package:mobile/features/catalog/presentation/providers/catalog_providers.dart';
 import 'package:mobile/features/dashboard/presentation/providers/dashboard_providers.dart';
 
@@ -133,6 +134,16 @@ class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
               ref.invalidate(dashboardOrderStatusProvider);
               ref.invalidate(inventoryAlertsProvider);
               ref.invalidate(dashboardSalesTimelineProvider(_selectedInterval));
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout_outlined, color: AppTheme.errorColor),
+            tooltip: 'Cerrar Sesión',
+            onPressed: () async {
+              await ref.read(authProvider.notifier).logout();
+              if (context.mounted) {
+                context.go('/login');
+              }
             },
           ),
         ],
