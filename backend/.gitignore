@@ -5,6 +5,7 @@ node_modules
 out
 !**/ports/out
 dist
+public/uploads
 *.tgz
 
 # code coverage

@@ -1,0 +1,26 @@
+rootProject.buildFileName = "/dev/null"
+
+def properties = new Properties()
+def propertiesFile = new File(settingsDir.parentFile, "local.properties")
+if (propertiesFile.exists()) {
+    propertiesFile.withInputStream { properties.load(it) }
+}
+def flutterSdkPath = properties.getProperty("flutter.sdk") ?: "/nix/store/s03y7q2ihssvbq0dckq7r4p20zazayjb-flutter-wrapped-3.44.3-sdk-links"
+
+def engineShortRev = (new File("$flutterSdkPath/bin/internal/engine.version")).text.take(10)
+def dir = new File("$System.env.HOME/.cache/flutter/nix-flutter-tools-gradle/$engineShortRev")
+dir.mkdirs()
+def file = new File(dir, "settings.gradle")
+
+file.text = """
+rootProject.projectDir = new File("$settingsDir")
+apply from: new File("$settingsDir/settings.gradle.kts")
+
+gradle.allprojects { project ->
+  project.beforeEvaluate {
+    project.layout.buildDirectory = new File("$dir/build")
+  }
+}
+"""
+
+includeBuild(dir)
