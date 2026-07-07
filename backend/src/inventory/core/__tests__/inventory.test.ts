@@ -47,6 +47,8 @@ describe("DecrementStockUseCase", () => {
       useCase.execute({
         productVariantId: "v1-id",
         quantity: 0,
+        referenceType: "manual",
+        referenceId: "test-ref",
       }),
     ).rejects.toThrow("Quantity to decrement must be greater than 0");
   });
@@ -61,6 +63,8 @@ describe("DecrementStockUseCase", () => {
       useCase.execute({
         productVariantId: "v1-id",
         quantity: 5,
+        referenceType: "manual",
+        referenceId: "test-ref",
       }),
     ).rejects.toThrow("Product variant not found");
   });
@@ -83,6 +87,8 @@ describe("DecrementStockUseCase", () => {
       useCase.execute({
         productVariantId: "v1-id",
         quantity: 5,
+        referenceType: "manual",
+        referenceId: "test-ref",
       }),
     ).rejects.toThrow("Insuficient stock for variant");
   });
