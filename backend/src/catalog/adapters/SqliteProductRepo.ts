@@ -8,6 +8,7 @@ import {
   productVariants,
   productImages,
   categories,
+  cartItems,
 } from "../../shared/infrastructure/database/schema.ts";
 import { eq, like, and, sql, inArray } from "drizzle-orm";
 
@@ -307,6 +308,17 @@ export class SqliteProductRepo implements IProductRepository {
    */
   async delete(id: string): Promise<void> {
     await db.transaction(async (tx) => {
+      // 0. Delete cart items referencing the variants of this product
+      const variants = await tx
+        .select({ id: productVariants.id })
+        .from(productVariants)
+        .where(eq(productVariants.productId, id));
+      
+      const variantIds = variants.map((v) => v.id);
+      if (variantIds.length > 0) {
+        await tx.delete(cartItems).where(inArray(cartItems.productVariantId, variantIds));
+      }
+
       // 1. Delete product images
       await tx.delete(productImages).where(eq(productImages.productId, id));
       // 2. Delete product variants

@@ -24661,6 +24661,11 @@ class SqliteProductRepo {
   }
   async delete(id) {
     await db.transaction(async (tx) => {
+      const variants = await tx.select({ id: productVariants.id }).from(productVariants).where(eq(productVariants.productId, id));
+      const variantIds = variants.map((v) => v.id);
+      if (variantIds.length > 0) {
+        await tx.delete(cartItems).where(inArray(cartItems.productVariantId, variantIds));
+      }
       await tx.delete(productImages).where(eq(productImages.productId, id));
       await tx.delete(productVariants).where(eq(productVariants.productId, id));
       await tx.delete(products).where(eq(products.id, id));
