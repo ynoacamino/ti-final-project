@@ -24,11 +24,22 @@ class StubAuthRepository implements AuthRepository {
   @override
   Future<(User?, Failure?)> login(String email, String password) async {
     print('StubAuthRepository.login called with email: $email');
-    currentUser = const User(id: 'u-1', name: 'Alvaro Test', email: 'alvaro@test.com', role: 'customer', isActive: true);
+    currentUser = const User(
+      id: 'u-1',
+      name: 'Alvaro Test',
+      email: 'alvaro@test.com',
+      role: 'customer',
+      isActive: true,
+    );
     return (currentUser, null);
   }
+
   @override
-  Future<(User?, Failure?)> register(String name, String email, String password) async => (null, null);
+  Future<(User?, Failure?)> register(
+    String name,
+    String email,
+    String password,
+  ) async => (null, null);
   @override
   Future<void> logout() async => currentUser = null;
 }
@@ -41,7 +52,10 @@ class StubCatalogRepository implements CatalogRepository {
   }
 
   @override
-  Future<(List<Product>?, Failure?)> getProducts({String? categoryId, String? query}) async {
+  Future<(List<Product>?, Failure?)> getProducts({
+    String? categoryId,
+    String? query,
+  }) async {
     final List<Product> prods = [
       const Product(
         id: 'p-1',
@@ -52,18 +66,25 @@ class StubCatalogRepository implements CatalogRepository {
         categoryId: 'cat-1',
         images: [],
         variants: [],
-      )
+      ),
     ];
     return (prods, null);
   }
 
   @override
-  Future<(Product?, Failure?)> getProductBySlug(String slug) async => (null, null);
+  Future<(Product?, Failure?)> getProductBySlug(String slug) async =>
+      (null, null);
   @override
-  Future<(bool, Failure?)> updateVariantStock(String variantId, int newStock) async => (true, null);
+  Future<(bool, Failure?)> updateVariantStock(
+    String variantId,
+    int newStock,
+  ) async => (true, null);
 
   @override
-  Future<(bool, Failure?)> createCategory(String name, String? description) async => (true, null);
+  Future<(bool, Failure?)> createCategory(
+    String name,
+    String? description,
+  ) async => (true, null);
 
   @override
   Future<(Product?, Failure?)> createProduct({
@@ -73,26 +94,50 @@ class StubCatalogRepository implements CatalogRepository {
     required String categoryId,
     required List<Map<String, dynamic>> variants,
   }) async => (null, null);
+
+  @override
+  Future<(bool, Failure?)> deleteProduct(String productId) async =>
+      (true, null);
 }
 
 class StubCartRepository implements CartRepository {
   @override
-  Future<(Cart?, Failure?)> getCart({String? sessionId}) async => (const Cart(id: 'c-1', status: 'active', items: []), null);
+  Future<(Cart?, Failure?)> getCart({String? sessionId}) async =>
+      (const Cart(id: 'c-1', status: 'active', items: []), null);
   @override
-  Future<(Cart?, Failure?)> addItemToCart({required String productVariantId, required int quantity, String? sessionId}) async => (null, null);
+  Future<(Cart?, Failure?)> addItemToCart({
+    required String productVariantId,
+    required int quantity,
+    String? sessionId,
+  }) async => (null, null);
   @override
-  Future<(Cart?, Failure?)> updateCartItemQuantity({required String cartItemId, required int quantity}) async => (null, null);
+  Future<(Cart?, Failure?)> updateCartItemQuantity({
+    required String cartItemId,
+    required int quantity,
+  }) async => (null, null);
   @override
-  Future<(Cart?, Failure?)> removeItemFromCart(String cartItemId) async => (null, null);
+  Future<(Cart?, Failure?)> removeItemFromCart(String cartItemId) async =>
+      (null, null);
   @override
-  Future<(Map<String, dynamic>?, Failure?)> checkout({required String cartId, required Map<String, dynamic> shippingAddress, String? guestEmail, String? guestName, String? guestPhone, String? notes}) async => (null, null);
+  Future<(Map<String, dynamic>?, Failure?)> checkout({
+    required String cartId,
+    required Map<String, dynamic> shippingAddress,
+    String? guestEmail,
+    String? guestName,
+    String? guestPhone,
+    String? notes,
+  }) async => (null, null);
   @override
-  Future<(Map<String, dynamic>?, Failure?)> confirmPayment(String stripePaymentIntentId) async => (null, null);
+  Future<(Map<String, dynamic>?, Failure?)> confirmPayment(
+    String stripePaymentIntentId,
+  ) async => (null, null);
 }
 
 void main() {
   group('App E2E Integration Flow Tests', () {
-    testWidgets('Full User Onboarding, Navigation, and Login Flow', (WidgetTester tester) async {
+    testWidgets('Full User Onboarding, Navigation, and Login Flow', (
+      WidgetTester tester,
+    ) async {
       final authRepo = StubAuthRepository();
       final catalogRepo = StubCatalogRepository();
       final cartRepo = StubCartRepository();
@@ -137,7 +182,7 @@ void main() {
 
       // Pump to trigger authenticating state
       await tester.pump();
-      
+
       // Let it settle transition by pumping multiple times to process async navigation
       for (int i = 0; i < 10; i++) {
         await tester.pump(const Duration(milliseconds: 100));

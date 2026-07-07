@@ -5,6 +5,7 @@ export interface UploadProductImageDTO {
   fileBuffer: Buffer;
   fileName: string;
   contentType: string;
+  origin?: string;
 }
 
 export interface IUploadProductImageUseCase {

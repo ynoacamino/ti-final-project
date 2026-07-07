@@ -48,6 +48,11 @@ export class CreateProductUseCase implements ICreateProductUseCase {
     const productId = crypto.randomUUID();
     const slug = generateSlug(dto.name);
 
+    const existingProduct = await this.productRepository.findBySlug(slug);
+    if (existingProduct) {
+      throw new Error("Ya existe un producto con este nombre o un nombre similar");
+    }
+
     // 5. Create Domain Variants
     const domainVariants = dto.variants.map((v) =>
       ProductVariant.create({

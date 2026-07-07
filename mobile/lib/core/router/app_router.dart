@@ -13,6 +13,8 @@ import 'package:mobile/features/cart/presentation/pages/order_confirmation_page.
 import 'package:mobile/features/orders/presentation/pages/my_orders_page.dart';
 import 'package:mobile/features/orders/presentation/pages/admin_orders_page.dart';
 import 'package:mobile/features/dashboard/presentation/pages/admin_dashboard_page.dart';
+import 'package:mobile/features/catalog/presentation/pages/admin_products_page.dart';
+import 'package:mobile/features/catalog/presentation/pages/create_product_page.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'root',
@@ -100,6 +102,14 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/admin/orders',
       builder: (context, state) => const AdminOrdersPage(),
+    ),
+    GoRoute(
+      path: '/admin/products',
+      builder: (context, state) => const AdminProductsPage(),
+    ),
+    GoRoute(
+      path: '/admin/products/create',
+      builder: (context, state) => const CreateProductPage(),
     ),
   ],
 );

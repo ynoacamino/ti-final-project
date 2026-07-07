@@ -58,12 +58,23 @@ Este flujo valida el proceso completo de selección, adición al carrito, ingres
 
 ## 3. Inserción de Productos al Catálogo (Admin)
 
-Dado que no se dispone de una interfaz visual administrativa en la aplicación móvil para crear productos, esta tarea se realiza directamente a través de la API REST del backend.
+Ahora se cuenta con una interfaz visual administrativa en la aplicación móvil para crear productos de forma interactiva y con diseño premium. También se puede seguir realizando directamente a través de la API REST del backend.
 
-### Requisitos:
-* Obtener el Token JWT de administrador tras iniciar sesión como tal.
+### Opción A: Interfaz Visual (Recomendada)
+1. **Acceso:** Inicia sesión como administrador en la app móvil con las credenciales:
+   * **Usuario:** `admin@smartpyme.com`
+   * **Contraseña:** `admin123`
+2. **Navegación:** En tu perfil, haz clic en **Panel Administrativo** y luego en **Gestionar Catálogo de Productos**.
+3. **Crear Listing:** Presiona el botón flotante dorado **Crear Producto**.
+4. **Formulario:** Completa los campos en las tres pestañas correspondientes:
+   * **General Info:** Nombre del producto (ej. `Casaca Cortaviento Premium`), selecciona categoría (ej. `Camisas`), ingresa descripción, precio base (ej. `149.90`), precio comparativo y toggle de impuestos.
+   * **Quick Attach Media:** Haz clic en el recuadro punteado de añadir imágenes y selecciona las fotos que deseas asociar al producto.
+   * **Variants:** Presiona **Add Variant** e ingresa los detalles de la variante (ej. Talla: `S`, Color: `Negro`, Stock: `15`, Precio Adicional: `0`). Añade las variantes que consideres.
+   * **Images Gallery:** Administra las imágenes asociadas.
+5. **Publicación:** Presiona **Publish Product**. El producto se creará en el backend y se subirán las imágenes asociadas.
+6. **Verificación:** Regresa a la pestaña de catálogo del cliente en la aplicación móvil y verifica que aparezca listado.
 
-### Pasos usando `curl`:
+### Opción B: Mediante API REST (`curl`)
 1. Envía una solicitud `POST` al endpoint `/api/products` incluyendo la cabecera `Authorization: Bearer <ADMIN_TOKEN>` y la estructura JSON del nuevo producto:
 
 ```bash
@@ -101,9 +112,15 @@ curl -X POST http://localhost:3000/api/products \
 
 ## 4. Eliminación de Productos del Catálogo (Admin)
 
-Para dar de baja o eliminar un producto de forma definitiva, se debe operar directamente sobre la base de datos SQLite local del backend (`smartpyme.db`) al no contar con un endpoint DELETE público.
+Para eliminar un producto de forma definitiva, ahora se puede hacer directamente desde la aplicación móvil o a través de la base de datos local SQLite backend.
 
-### Pasos:
+### Opción A: Interfaz Visual (Recomendada)
+1. **Navegación:** Ve a **Panel Administrativo** -> **Gestionar Catálogo de Productos**.
+2. **Buscar y Eliminar:** Busca el producto en el catálogo (usando la barra de búsqueda). Presiona el icono de papelera (rojo) junto al producto.
+3. **Confirmación:** Acepta el cuadro de diálogo para confirmar la eliminación permanente. El producto, sus variantes y sus imágenes asociadas se borrarán de forma segura.
+4. **Verificación:** Reinicia o refresca el catálogo en la app móvil y confirma que el artículo ha desaparecido.
+
+### Opción B: Acceso Directo a la DB local (`smartpyme.db`)
 1. **Acceso a la DB:** Conéctate a la base de datos usando Drizzle Kit o un explorador de bases de datos SQLite desde la carpeta `/backend`:
    ```bash
    # Opción A: Levantar Drizzle Studio (Entorno visual en navegador)

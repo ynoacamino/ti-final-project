@@ -126,6 +126,7 @@ ordersRouter.post("/checkout", async (c) => {
       201,
     );
   } catch (error: any) {
+    console.error("Checkout error:", error);
     return c.json({ success: false, error: error.message }, 400);
   }
 });
@@ -146,6 +147,7 @@ ordersRouter.post("/payments/confirm", async (c) => {
     const order = await confirmPaymentUseCase.execute(validation.data);
     return c.json({ success: true, order }, 200);
   } catch (error: any) {
+    console.error("Confirm payment error:", error);
     return c.json({ success: false, error: error.message }, 400);
   }
 });

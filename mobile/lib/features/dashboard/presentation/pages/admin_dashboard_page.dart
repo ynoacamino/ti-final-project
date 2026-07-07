@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/core/theme/app_theme.dart';
+import 'package:mobile/features/auth/presentation/providers/auth_provider.dart';
 import 'package:mobile/features/catalog/presentation/providers/catalog_providers.dart';
 import 'package:mobile/features/dashboard/presentation/providers/dashboard_providers.dart';
 
@@ -135,6 +136,16 @@ class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
               ref.invalidate(dashboardSalesTimelineProvider(_selectedInterval));
             },
           ),
+          IconButton(
+            icon: const Icon(Icons.logout_outlined, color: AppTheme.errorColor),
+            tooltip: 'Cerrar Sesión',
+            onPressed: () async {
+              await ref.read(authProvider.notifier).logout();
+              if (context.mounted) {
+                context.go('/login');
+              }
+            },
+          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -195,7 +206,6 @@ class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
 
             const SizedBox(height: 32),
 
-            // Navigation shortcuts
             ElevatedButton.icon(
               onPressed: () => context.push('/admin/orders'),
               icon: const Icon(
@@ -205,6 +215,21 @@ class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
               label: const Text('Gestionar Envíos y Pedidos'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.primaryColor,
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            ElevatedButton.icon(
+              onPressed: () => context.push('/admin/products'),
+              icon: const Icon(
+                Icons.storefront_outlined,
+                color: Colors.black,
+              ),
+              label: const Text('Gestionar Catálogo de Productos'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFEAB308),
+                foregroundColor: Colors.black,
               ),
             ),
 

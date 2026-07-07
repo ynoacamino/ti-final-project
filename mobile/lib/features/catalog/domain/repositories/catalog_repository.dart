@@ -29,4 +29,7 @@ abstract class CatalogRepository {
     required String categoryId,
     required List<Map<String, dynamic>> variants,
   });
+
+  /// Administrative operation to delete a product.
+  Future<(bool, Failure?)> deleteProduct(String productId);
 }

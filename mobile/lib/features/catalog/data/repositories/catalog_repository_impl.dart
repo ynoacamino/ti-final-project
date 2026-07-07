@@ -169,4 +169,19 @@ class CatalogRepositoryImpl implements CatalogRepository {
       return (null, ServerFailure(e.toString()));
     }
   }
+
+  @override
+  Future<(bool, Failure?)> deleteProduct(String productId) async {
+    try {
+      await client.dio.delete('/products/$productId');
+      return (true, null);
+    } on DioException catch (e) {
+      return (
+        false,
+        ServerFailure(e.response?.data?['error'] ?? 'Error de red'),
+      );
+    } catch (e) {
+      return (false, ServerFailure(e.toString()));
+    }
+  }
 }
