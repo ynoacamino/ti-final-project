@@ -1,7 +1,7 @@
 import type { IRegisterUseCase, RegisterDTO } from "../ports/in/IRegisterUseCase.ts";
 import type { IUserRepository } from "../ports/out/IUserRepository.ts";
 import { User } from "./User.ts";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 /**
  * Service to register a new user in the system.

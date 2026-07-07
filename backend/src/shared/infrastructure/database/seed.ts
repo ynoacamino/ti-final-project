@@ -1,7 +1,7 @@
 import { db } from "./client.ts";
 import { users, categories, products, productVariants, productImages } from "./schema.ts";
 import { generateSlug } from "../../utils/slug.ts";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 async function main() {
   console.log("🌱 Starting database seeding...");

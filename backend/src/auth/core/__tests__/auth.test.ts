@@ -3,7 +3,7 @@ import { User } from "../User.ts";
 import { RegisterUseCase } from "../RegisterUseCase.ts";
 import { LoginUseCase } from "../LoginUseCase.ts";
 import type { IUserRepository } from "../../ports/out/IUserRepository.ts";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 describe("Auth Unit Tests", () => {
   let mockUserRepo: IUserRepository;

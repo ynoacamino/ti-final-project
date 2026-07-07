@@ -1,6 +1,6 @@
 import type { ILoginUseCase, LoginDTO, LoginResult } from "../ports/in/ILoginUseCase.ts";
 import type { IUserRepository } from "../ports/out/IUserRepository.ts";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { SignJWT } from "jose";
 
 /**
