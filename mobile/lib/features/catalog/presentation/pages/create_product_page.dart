@@ -709,15 +709,18 @@ class _CreateProductPageState extends ConsumerState<CreateProductPage>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'VARIANTES DEL PRODUCTO',
-                style: TextStyle(
-                  color: AppTheme.darkTextSecondary,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.1,
+              const Expanded(
+                child: Text(
+                  'VARIANTES DEL PRODUCTO',
+                  style: TextStyle(
+                    color: AppTheme.darkTextSecondary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.1,
+                  ),
                 ),
               ),
+              const SizedBox(width: 8),
               ElevatedButton.icon(
                 onPressed: _showAddVariantDialog,
                 style: ElevatedButton.styleFrom(
