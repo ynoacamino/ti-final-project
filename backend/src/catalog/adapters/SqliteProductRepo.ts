@@ -301,4 +301,18 @@ export class SqliteProductRepo implements IProductRepository {
       })
       .where(eq(productVariants.id, variantId));
   }
+
+  /**
+   * Deletes a product, its variants, and its images.
+   */
+  async delete(id: string): Promise<void> {
+    await db.transaction(async (tx) => {
+      // 1. Delete product images
+      await tx.delete(productImages).where(eq(productImages.productId, id));
+      // 2. Delete product variants
+      await tx.delete(productVariants).where(eq(productVariants.productId, id));
+      // 3. Delete product
+      await tx.delete(products).where(eq(products.id, id));
+    });
+  }
 }

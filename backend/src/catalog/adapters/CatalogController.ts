@@ -186,3 +186,22 @@ catalogRouter.post("/products/:id/images", authMiddleware(["admin"]), async (c) 
     return c.json({ success: false, error: error.message }, 400);
   }
 });
+
+/**
+ * 7. Delete Product
+ * DELETE /api/products/:id (Admin Only)
+ */
+catalogRouter.delete("/products/:id", authMiddleware(["admin"]), async (c) => {
+  try {
+    const id = c.req.param("id");
+    const product = await productRepo.findById(id);
+    if (!product) {
+      return c.json({ success: false, error: "Product not found" }, 404);
+    }
+    await productRepo.delete(id);
+    return c.json({ success: true, message: "Product deleted successfully" }, 200);
+  } catch (error: any) {
+    return c.json({ success: false, error: error.message }, 500);
+  }
+});
+

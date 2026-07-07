@@ -195,7 +195,6 @@ class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
 
             const SizedBox(height: 32),
 
-            // Navigation shortcuts
             ElevatedButton.icon(
               onPressed: () => context.push('/admin/orders'),
               icon: const Icon(
@@ -205,6 +204,21 @@ class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
               label: const Text('Gestionar Envíos y Pedidos'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.primaryColor,
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            ElevatedButton.icon(
+              onPressed: () => context.push('/admin/products'),
+              icon: const Icon(
+                Icons.storefront_outlined,
+                color: Colors.black,
+              ),
+              label: const Text('Gestionar Catálogo de Productos'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFEAB308),
+                foregroundColor: Colors.black,
               ),
             ),
 
