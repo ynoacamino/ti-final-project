@@ -1,0 +1,47 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#6C63FF', 'primaryTextColor': '#fff', 'fontSize': '12px', 'fontFamily': 'arial'}}}%%
+
+graph LR
+    subgraph FE["Frontend"]
+        direction TB
+        F1["Flutter SDK 3.12"]:::fe
+        F2["Riverpod<br/>State Mgmt"]:::fe
+        F3["GoRouter<br/>Navigation"]:::fe
+        F4["Dio<br/>HTTP Client"]:::fe
+        F5["Stripe<br/>Payments"]:::fe
+        F6["fl_chart<br/>Charts"]:::fe
+    end
+
+    subgraph BE["Backend"]
+        direction TB
+        B1["Hono<br/>Web Framework"]:::be
+        B2["Drizzle ORM<br/>Data Layer"]:::be
+        B3["Zod<br/>Validation"]:::be
+        B4["jose<br/>JWT Auth"]:::be
+        B5["Pino<br/>Logging"]:::be
+        B6["Vitest<br/>Testing"]:::be
+    end
+
+    subgraph INF["Infrastructure"]
+        direction TB
+        I1["SQLite<br/>Database"]:::db
+        I2["Cloudflare R2<br/>Storage"]:::db
+        I3["Stripe API<br/>Payments"]:::db
+        I4["Vercel<br/>Deploy"]:::db
+    end
+
+    subgraph ARCH["Architecture"]
+        direction TB
+        A1["Hexagonal<br/>Ports & Adapters"]:::arch
+        A2["DDD<br/>Domain-Driven"]:::arch
+        A3["Clean Arch<br/>Feature-based"]:::arch
+    end
+
+    FE --> BE
+    BE --> INF
+    ARCH -.-> FE
+    ARCH -.-> BE
+
+    classDef fe fill:#6C63FF,stroke:#5A52D5,color:#fff,stroke-width:2px,rx:8
+    classDef be fill:#FF6B6B,stroke:#E55555,color:#fff,stroke-width:2px,rx:8
+    classDef db fill:#4ECDC4,stroke:#3BB5AD,color:#fff,stroke-width:2px,rx:8
+    classDef arch fill:#FFE66D,stroke:#E6CF00,color:#333,stroke-width:2px,rx:8
