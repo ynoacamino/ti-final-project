@@ -702,7 +702,7 @@ operacional, optimización de costos, mejora de la experiencia del
 cliente, escalabilidad y crecimiento, y mantenimiento de la
 competitividad en un mundo digital @Ghobakhloo2021 @Sharabati2024.
 
-== Disponibilidad de Datos y Código
+= Disponibilidad de Datos y Código
 
 El código fuente del prototipo SmartPyME implementado en este estudio
 está disponible en el repositorio público
