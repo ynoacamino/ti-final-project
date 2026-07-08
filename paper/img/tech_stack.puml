@@ -1,0 +1,46 @@
+@startuml
+!theme plain
+
+title Stack Tecnológico
+
+skinparam backgroundColor #FAFAFA
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+
+package "Frontend" as fe #E8E6F5 {
+  component "Flutter SDK 3.12" as f1 #6C63FF;text:white
+  component "Riverpod\nGestión de Estado" as f2 #6C63FF;text:white
+  component "GoRouter\nNavegación" as f3 #6C63FF;text:white
+  component "Dio\nCliente HTTP" as f4 #6C63FF;text:white
+  component "Stripe\nPagos" as f5 #6C63FF;text:white
+  component "fl_chart\nGráficos" as f6 #6C63FF;text:white
+}
+
+package "Backend" as be #FFE0E0 {
+  component "Hono\nFramework Web" as b1 #FF6B6B;text:white
+  component "Drizzle ORM\nCapa de Datos" as b2 #FF6B6B;text:white
+  component "Zod\nValidación" as b3 #FF6B6B;text:white
+  component "jose\nJWT Auth" as b4 #FF6B6B;text:white
+  component "Pino\nLogging" as b5 #FF6B6B;text:white
+  component "Vitest\nTesting" as b6 #FF6B6B;text:white
+}
+
+package "Infraestructura" as inf #D4F5F2 {
+  component "SQLite\nBase de Datos" as i1 #4ECDC4;text:white
+  component "Cloudflare R2\nAlmacenamiento" as i2 #4ECDC4;text:white
+  component "Stripe API\nPagos" as i3 #4ECDC4;text:white
+  component "Vercel\nDespliegue" as i4 #4ECDC4;text:white
+}
+
+package "Arquitectura" as arch #FFF8D4 {
+  component "Hexagonal\nPuertos y Adaptadores" as a1 #FFE66D;text:black
+  component "DDD\nDiseño Guiado por Dominio" as a2 #FFE66D;text:black
+  component "Clean Arch\nBasada en Features" as a3 #FFE66D;text:black
+}
+
+fe --> be
+be --> inf
+arch ..> fe : guía
+arch ..> be : guía
+
+@enduml
