@@ -3,7 +3,9 @@ node_modules
 
 # output
 out
+!**/ports/out
 dist
+public/uploads
 *.tgz
 
 # code coverage

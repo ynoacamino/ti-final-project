@@ -80,6 +80,14 @@ describe("Cart Unit Tests", () => {
         }
         return null;
       }),
+      findActiveCartByVariantId: vi.fn(async (variantId) => {
+        for (const cart of cartsDb.values()) {
+          if (cart.status === "active" && cart.items.some((i) => i.productVariantId === variantId)) {
+            return cart;
+          }
+        }
+        return null;
+      }),
     };
 
     mockProductRepo = {
