@@ -1,0 +1,17 @@
+@startmindmap
+!theme plain
+
+title Beneficios de la Transformación Digital para las PYMES
+
+skinparam backgroundColor #FAFAFA
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+
+*[#6C63FF] Transformación Digital\npara PYMES
+**[#FF6B6B] Eficiencia Operacional
+**[#FFE66D] Optimización de Costos
+**[#4ECDC4] Experiencia del Cliente
+**[#6C63FF] Escalabilidad y Crecimiento
+**[#9B93E8] Competitividad Digital
+
+@endmindmap

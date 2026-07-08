@@ -1,0 +1,49 @@
+@startuml
+!theme plain
+
+title Arquitectura del Sistema — Plataforma de Comercio Electrónico
+
+skinparam backgroundColor #FAFAFA
+skinparam packageBorderColor #888
+skinparam componentBorderColor #666
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+
+package "Cliente Móvil (Flutter)" as client #E8E6F5 {
+  component "App Flutter\nRiverpod + GoRouter" as app #6C63FF;text:white
+  component "Tema Claro\n(Clientes)" as light #9B93E8;text:white
+  component "Tema Oscuro\n(Administradores)" as dark #7B72CC;text:white
+}
+
+package "API REST (Bun + Hono)" as api #FFE0E0 {
+  component "Autenticación\nJWT + bcrypt" as auth #FF6B6B;text:white
+  component "Catálogo\nCRUD Productos" as catalog #FF6B6B;text:white
+  component "Carrito\nSesiones + Ítems" as cart #FF6B6B;text:white
+  component "Pedidos\nStripe + Webhooks" as orders #FF6B6B;text:white
+  component "Dashboard\nMétricas + Gráficos" as dashboard #FF6B6B;text:white
+  component "Inventario\nStock + Alertas" as inventory #FF6B6B;text:white
+}
+
+package "Capa de Almacenamiento" as storage #D4F5F2 {
+  database "SQLite\n(Drizzle ORM)" as sqlite #4ECDC4;text:white
+  cloud "Cloudflare R2\n(Imágenes)" as r2 #3BB5AD;text:white
+  rectangle "Stripe\n(Pagos Sandbox)" as stripe #4ECDC4;text:white
+}
+
+app --> auth
+app --> catalog
+app --> cart
+app --> orders
+app --> dashboard
+app --> inventory
+
+auth --> sqlite
+catalog --> sqlite
+catalog --> r2
+cart --> sqlite
+orders --> sqlite
+orders --> stripe
+dashboard --> sqlite
+inventory --> sqlite
+
+@enduml

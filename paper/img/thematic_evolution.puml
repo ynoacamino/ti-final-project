@@ -1,0 +1,23 @@
+@startuml
+!theme plain
+
+title Evolución Temática de la Investigación sobre Transformación Digital en PYMES
+
+skinparam backgroundColor #FAFAFA
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+
+left to right direction
+
+node "Fase 1: 2020-2021\nRespuesta Reactiva\n----\nImpacto del COVID-19\nDigitalización Urgente\nSupervivencia Empresarial" as p1 #FF6B6B
+
+node "Fase 2: 2022-2023\nConsolidación Estratégica\n----\nEconomía Circular\nCapacidades Dinámicas\nModelos de Madurez" as p2 #FFE66D
+
+node "Fase 3: 2024-2026\nInnovación Tecnológica\n----\nIA Generativa\nGemelos Digitales\nIoT + Nube" as p3 #6C63FF
+
+p1 -right-> p2 : evolución
+p2 -right-> p3 : evolución
+
+p1 -[hidden]right-> p3
+
+@enduml

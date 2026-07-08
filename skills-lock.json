@@ -163,6 +163,12 @@
       "skillPath": "skills/depmap/SKILL.md",
       "computedHash": "34f33c94a142e1d63aec194933a4e2e94edd31ac64326a1e4dd6e7788a2b43ea"
     },
+    "design-doc-mermaid": {
+      "source": "spillwavesolutions/design-doc-mermaid",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "3610d5b13abec895fe1676a917b1a8a94dfd1286adf99476697d4a31e09227ac"
+    },
     "dhdna-profiler": {
       "source": "K-Dense-AI/scientific-agent-skills",
       "sourceType": "github",
@@ -403,6 +409,12 @@
       "skillPath": "skills/medchem/SKILL.md",
       "computedHash": "2e8c5300a3c1c8595cf8cd714f02d5cd3687f5c05378265d307498a83678a5b0"
     },
+    "mermaid-diagrams": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/mermaid-diagrams/SKILL.md",
+      "computedHash": "6d36e69adad781f106a2fb4b19ebc22bf0c211babdc0d1ae5822fa65abb48bd8"
+    },
     "modal": {
       "source": "K-Dense-AI/scientific-agent-skills",
       "sourceType": "github",
@@ -540,6 +552,12 @@
       "sourceType": "github",
       "skillPath": "skills/pi-agent/SKILL.md",
       "computedHash": "c79c19bb9850c325e695e38894d7550199a37ce05e6aed57ec7704ae252e81bc"
+    },
+    "plantuml-skill": {
+      "source": "agents365-ai/365-skills",
+      "sourceType": "github",
+      "skillPath": "plugins/plantuml/skills/plantuml-skill/SKILL.md",
+      "computedHash": "75b9babbb821454d6b696a2514b2494a5fa1ecc88514a67d5671fbc3b48b2615"
     },
     "polars": {
       "source": "K-Dense-AI/scientific-agent-skills",
@@ -684,6 +702,13 @@
       "sourceType": "github",
       "skillPath": "skills/research-lookup/SKILL.md",
       "computedHash": "34ad3401ea09b7f7100848f2caf0b5db17e73380df83229a10462a89a21db3ad"
+    },
+    "revealjs-react": {
+      "source": "gustadev121/skills",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": "skills/revealjs-react/SKILL.md",
+      "computedHash": "4139b7051375ca762731acc617bb5bef0dda58e298d0067862272e61b4341c38"
     },
     "rowan": {
       "source": "K-Dense-AI/scientific-agent-skills",
